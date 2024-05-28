@@ -15,7 +15,9 @@ const options = [
 
 const AdminOptionScreen = ({ navigation }) => {
   const handlePress = (screen) => {
-    navigation.navigate(screen);
+    if(screen.name == 'Class'){
+    navigation.navigate('AdminScreen');
+    }
   };
 
   return (

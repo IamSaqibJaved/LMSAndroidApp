@@ -7,11 +7,14 @@ import AdminScreen from './AdminScreen'; // Correctly import AdminScreen using a
 const HomeScreen = ({ navigation }) => {
   const handlePress = (accountType) => {
     if (accountType === 'Admin') {
-      navigation.navigate('Admin');
+      navigation.navigate('AdminOptionScreen');
     }
     else if (accountType === 'Student'){
         navigation.navigate('Student');
     }
+    else if (accountType === 'Teacher'){
+      navigation.navigate('LoginScreen');
+  }
   };
 
 
