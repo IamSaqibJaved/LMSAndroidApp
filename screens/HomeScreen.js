@@ -9,7 +9,11 @@ const HomeScreen = ({ navigation }) => {
     if (accountType === 'Admin') {
       navigation.navigate('Admin');
     }
+    else if (accountType === 'Student'){
+        navigation.navigate('Student');
+    }
   };
+
 
   return (
     <View style={styles.homeContainer}>
