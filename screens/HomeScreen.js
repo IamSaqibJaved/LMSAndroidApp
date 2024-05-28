@@ -1,15 +1,16 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import AdminScreen from './AdminScreen'; // Correctly import AdminScreen using a relative path
 
 const HomeScreen = ({ navigation }) => {
-  const handlePress = (accountType) => {
-    if (accountType === 'Admin') {
-      navigation.navigate('Admin');
+  const handlePress = (userType) => {
+    if (userType === 'Admin') {
+      
+       navigation.navigate('Login', {userType});
     }
-    else if (accountType === 'Student'){
+    else if (userType === 'Student'){
         navigation.navigate('Student');
     }
   };

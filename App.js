@@ -7,6 +7,10 @@ import SplashScreen from './screens/SplashScreen';
 import AdminScreen from './screens/AdminScreen'; // Import AdminScreen
 import AssignClass from './screens/AssignClass'; // Adjust the path as needed
 
+// Login 
+import LoginScreen from './screens/LoginScreen';
+import AdminOptionScreen from './screens/AdminOptionScreen.js';
+
 // Student Screens
 import StudentOptionScreen from './screens/StudentOptionScreen.js';
 // import AdminScreen from './screens/AdminOptionScreen.js';
@@ -16,7 +20,7 @@ import TimetableScreen from './screens/TimetableScreenforStudent.js';
 import SyllabusScreen from './screens/SyllabusScreenforStudent.js';
 import StudentScreen from './screens/StudentInfoScreen.js';
 import FeeScreen from './screens/FeeScreenforStudent.js';
-import ResultScreen from './screens/ResultScreeforStudent.js';
+import ResultScreen from './screens/ResultScreenforStudent.js';
 
 
 
@@ -46,6 +50,9 @@ const App = () => {
             },
           }}
         />
+        <Stack.Screen name="Login" component={LoginScreen} />
+        {/* Admin */}
+        <Stack.Screen name="AdminOptions" component={AdminOptionScreen} />
         <Stack.Screen name="Admin" component={AdminScreen} />
         <Stack.Screen name="AssignClass" component={AssignClass} />
 

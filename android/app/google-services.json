@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "206089772944",
+    "project_id": "lmsandroid-b2516",
+    "storage_bucket": "lmsandroid-b2516.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:206089772944:android:541dce44e07493bfbc5d15",
+        "android_client_info": {
+          "package_name": "com.lmsandroidapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCNXjMKue0k7Fok8Q6w27s63x3BO973r8k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
