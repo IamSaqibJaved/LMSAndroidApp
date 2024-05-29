@@ -18,8 +18,11 @@ import SyllabusScreen from './screens/SyllabusScreenforStudent.js';
 import StudentScreen from './screens/StudentInfoScreen.js';
 import FeeScreen from './screens/FeeScreenforStudent.js';
 import ResultScreen from './screens/ResultScreeforStudent.js';
-import LoginScreen from './screens/LoginScreen.js';
-
+// import LoginScreen from './screens/LoginScreen.js';
+import TeacherDashboard from './screens/Teacher/TeacherDashboard.js';
+import InsertMarks from './screens/Teacher/InsertMarks.js';
+import ViewMarks from './screens/Teacher/ViewMarks.js';
+import ViewStudentMarks from './screens/Teacher/ViewStudentMarks.js';
 
 
 const Stack = createStackNavigator();
@@ -44,11 +47,11 @@ const App = () => {
               fontSize: 25,
               letterSpacing: 10,
               color: 'black',
-              top: 10,
+              top: 5,
             },
           }}
         />
-        <Stack.Screen name="LoginScreen" component={LoginScreen}
+        {/* <Stack.Screen name="LoginScreen" component={LoginScreen}
         options={{
             headerTitle: 'SMARTIOUS',
             headerTitleAlign: 'center',
@@ -57,22 +60,140 @@ const App = () => {
               fontSize: 25,
               letterSpacing: 10,
               color: 'black',
-              top: 0,
+              top: 5,
+            },}} /> */}
+        <Stack.Screen name="AdminOptionScreen" component={AdminOptionScreen} options={{
+            headerTitle: 'Dashboard',
+            headerTitleAlign: 'center',
+            headerTitleStyle: { 
+              fontFamily: 'Poppins-SemiBold',
+              fontSize: 22,
+              color: 'black',
+              top: 5,
+            },}}
+         />
+         <Stack.Screen name="AdminScreen" component={AdminScreen} options={{
+            headerTitle: 'Classes',
+            headerTitleAlign: 'center',
+            headerTitleStyle: { 
+              fontFamily: 'Poppins-SemiBold',
+              fontSize: 22,
+              color: 'black',
+              top: 5,
+            },}}/>
+        <Stack.Screen name="AssignClass" component={AssignClass}  options={{
+            headerTitle: 'Assign Class',
+            headerTitleAlign: 'center',
+            headerTitleStyle: { 
+              fontFamily: 'Poppins-SemiBold',
+              fontSize: 22,
+              color: 'black',
+              top: 5,
             },}} />
-        <Stack.Screen name="AdminScreen" component={AdminScreen} />
-        <Stack.Screen name="AdminOptionScreen" component={AdminOptionScreen} />
-        <Stack.Screen name="AssignClass" component={AssignClass} />
 
         {/* Student Screens */}
-        <Stack.Screen name="Student" component={StudentOptionScreen} />
-        {/* <Stack.Screen name="Admin" component={AdminScreen} /> */}
+        <Stack.Screen name="Student" component={StudentOptionScreen} options={{
+            headerTitle: 'Dashboard',
+            headerTitleAlign: 'center',
+            headerTitleStyle: { 
+              fontFamily: 'Poppins-SemiBold',
+              fontSize: 22,
+              color: 'black',
+              top: 5,
+            },}}/>
+
         <Stack.Screen name="Teacher" component={TeacherScreen} />
-        <Stack.Screen name="Marks" component={MarksScreen} />
-        <Stack.Screen name="Timetable" component={TimetableScreen} />
-        <Stack.Screen name="Syllabus" component={SyllabusScreen} />
+
+
+        <Stack.Screen name="Marks" component={MarksScreen} options={{
+            headerTitle: 'Marks',
+            headerTitleAlign: 'center',
+            headerTitleStyle: { 
+              fontFamily: 'Poppins-SemiBold',
+              fontSize: 22,
+              color: 'black',
+              top: 5,
+            },}}/>
+        <Stack.Screen name="Timetable" component={TimetableScreen} options={{
+            headerTitle: 'TimeTable',
+            headerTitleAlign: 'center',
+            headerTitleStyle: { 
+              fontFamily: 'Poppins-SemiBold',
+              fontSize: 22,
+              color: 'black',
+              top: 5,
+            },}} />
+        <Stack.Screen name="Syllabus" component={SyllabusScreen} options={{
+            headerTitle: 'Syllabus',
+            headerTitleAlign: 'center',
+            headerTitleStyle: { 
+              fontFamily: 'Poppins-SemiBold',
+              fontSize: 22,
+              color: 'black',
+              top: 5,
+            },}}/>
         <Stack.Screen name="StudentScreen" component={StudentScreen} />
-        <Stack.Screen name="Fee" component={FeeScreen} />
-        <Stack.Screen name="Result" component={ResultScreen} />
+        <Stack.Screen name="Fee" component={FeeScreen} options={{
+            headerTitle: 'Fee',
+            headerTitleAlign: 'center',
+            headerTitleStyle: { 
+              fontFamily: 'Poppins-SemiBold',
+              fontSize: 22,
+              color: 'black',
+              top: 5,
+            },}}/>
+        <Stack.Screen name="Result" component={ResultScreen} options={{
+            headerTitle: 'Result',
+            headerTitleAlign: 'center',
+            headerTitleStyle: { 
+              fontFamily: 'Poppins-SemiBold',
+              fontSize: 22,
+              color: 'black',
+              top: 5,
+            },}}/>
+
+
+                                              {/* Teacher Screens */}
+
+          <Stack.Screen name="TeacherDashboard" component={TeacherDashboard} options={{
+            headerTitle: 'Dashboard',
+            headerTitleAlign: 'center',
+            headerTitleStyle: { 
+              fontFamily: 'Poppins-SemiBold',
+              fontSize: 22,
+              color: 'black',
+              top: 5,
+            },}}/>
+
+            <Stack.Screen name="insert-marks" component={InsertMarks} options={{
+            headerTitle: 'Insert Marks',
+            headerTitleAlign: 'center',
+            headerTitleStyle: { 
+              fontFamily: 'Poppins-SemiBold',
+              fontSize: 22,
+              color: 'black',
+              top: 5,
+            },}}/>
+
+            <Stack.Screen name="view-marks" component={ViewMarks} options={{
+            headerTitle: 'View Marks',
+            headerTitleAlign: 'center',
+            headerTitleStyle: { 
+              fontFamily: 'Poppins-SemiBold',
+              fontSize: 22,
+              color: 'black',
+              top: 5,
+            },}}/>
+
+            <Stack.Screen name="view-student-marks" component={ViewStudentMarks} options={{
+            headerTitle: 'Marks',
+            headerTitleAlign: 'center',
+            headerTitleStyle: { 
+              fontFamily: 'Poppins-SemiBold',
+              fontSize: 22,
+              color: 'black',
+              top: 5,
+            },}}/>
       </Stack.Navigator>
     </NavigationContainer>
   );
