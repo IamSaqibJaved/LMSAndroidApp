@@ -20,18 +20,27 @@ import EditStudentScreen from './screens/AdminEditStudent.js';
 import AddFeeScreen from './screens/AdminAddFee.js';
 import EditFeeScreen from './screens/AdminEditFee.js';
 import AdminStudentFeesScreen from './screens/AdminStudentFees.js';
+// import syllabusScreen from './screens/AdminSyllabus.js';
+// import editSyllabusScreen from './screens/AdminEditSyllabus.js';
+// import timetableScreen from './screens/AdminTimetable.js';
+import TimetableScreen from './screens/AdminTimetable.js';
+import SyllabusScreen from './screens/AdminSyllabus.js';
+import EditSyllabusScreen from './screens/AdminEditSyllabus.js';
+
 
 
 // Student Screens
+
 import StudentOptionScreen from './screens/StudentOptionScreen.js';
 // import AdminScreen from './screens/AdminOptionScreen.js';
 import TeacherScreen from './screens/TeacherScreenforStudent.js';
 import MarksScreen from './screens/MarksScreenforStudent.js';
-import TimetableScreen from './screens/TimetableScreenforStudent.js';
-import SyllabusScreen from './screens/SyllabusScreenforStudent.js';
-import StudentScreen from './screens/StudentInfoScreen.js';
-import FeeScreen from './screens/FeeScreenforStudent.js';
+import TimetableScreenforStudent from './screens/TimetableScreenforStudent.js';
+import SyllabusScreenforStudent from './screens/SyllabusScreenforStudent.js';
+// import StudentScreen from './screens/StudentInfoScreen.js';
+// import FeeScreen from './screens/FeeScreenforStudent.js';
 import ResultScreen from './screens/ResultScreenforStudent.js';
+
 
 
 
@@ -76,14 +85,15 @@ const App = () => {
         <Stack.Screen name="EditFee" component={EditFeeScreen}/>
         <Stack.Screen name="Fee" component={AdminStudentFeesScreen}/>
 
+        <Stack.Screen name="Syllabus" component={SyllabusScreen}/>
+        <Stack.Screen name="EditSyllabus" component={EditSyllabusScreen}/>
+        <Stack.Screen name="Timetable" component={TimetableScreen}/>
+
         {/* Student Screens */}
         <Stack.Screen name="StudentOptions" component={StudentOptionScreen} />
         {/* <Stack.Screen name="Admin" component={AdminScreen} /> */}
         <Stack.Screen name="Teacher" component={TeacherScreen} />
         <Stack.Screen name="Marks" component={MarksScreen} />
-        <Stack.Screen name="Timetable" component={TimetableScreen} />
-        <Stack.Screen name="Syllabus" component={SyllabusScreen} />
-        <Stack.Screen name="StudentScreen" component={StudentScreen} />
         {/* <Stack.Screen name="Fee" component={FeeScreen} /> */}
         <Stack.Screen name="Result" component={ResultScreen} />
       </Stack.Navigator>

@@ -1,79 +1,78 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image } from 'react-native';
-import { getFirestore, collection, getDocs } from 'firebase/firestore';
-import app from './firebaseConfig'; // Your Firebase configuration
+// AdminSyllabus.js
+import React from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
-const firestore = getFirestore(app);
+const syllabus = [
+  { id: 'nursery', name: 'Nursery' },
+  { id: 'prep', name: 'Prep' },
+  { id: 'class1', name: 'Class 1' },
+  { id: 'class2', name: 'Class 2' },
+  { id: 'class3', name: 'Class 3' },
+  { id: 'class4', name: 'Class 4' },
+  { id: 'class5', name: 'Class 5' },
+  { id: 'class6', name: 'Class 6' },
+  { id: 'class7', name: 'Class 7' },
+  { id: 'class8', name: 'Class 8' },
+];
 
-const syllabusScreen = ({ navigation }) => {
-  const [syllabusData, setSyllabusData] = useState([]);
+const SyllabusScreen = () => {
+  const navigation = useNavigation();
 
-  useEffect(() => {
-    const fetchSyllabus = async () => {
-      const syllabusCollection = collection(firestore, 'syllabus');
-      const syllabusSnapshot = await getDocs(syllabusCollection);
-      const syllabusList = syllabusSnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      setSyllabusData(syllabusList);
-    };
-    fetchSyllabus();
-  }, []);
+  const handleSyllabusClick = (id) => {
+    navigation.navigate('EditSyllabus', { className: id });
+  };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>SYLLABUS</Text>
-      <FlatList
-        data={syllabusData}
-        numColumns={2}
-        renderItem={({ item }) => (
-          <TouchableOpacity style={styles.classBox} onPress={() => navigation.navigate('EditSyllabus', { classId: item.id })}>
-            <Image
-              source={item.syllabus ? { uri: item.syllabus } : require('./assets/placeholder.png')}
-              style={styles.image}
-            />
-            <Text style={styles.classText}>{item.class}</Text>
+    <ScrollView contentContainerStyle={styles.container}>
+      <Text style={styles.header}>SYLLABUS</Text>
+      <View style={styles.syllabusContainer}>
+        {syllabus.map((item) => (
+          <TouchableOpacity
+            key={item.id}
+            style={styles.syllabusItem}
+            onPress={() => handleSyllabusClick(item.id)}
+          >
+            <Text style={styles.syllabusText}>{item.name}</Text>
           </TouchableOpacity>
-        )}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.grid}
-      />
-    </View>
+        ))}
+      </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    padding: 20,
     backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
   },
-  title: {
+  header: {
     fontSize: 24,
     fontWeight: 'bold',
+    textAlign: 'center',
     marginVertical: 20,
+    fontFamily: 'IMFellEnglish-Regular',
   },
-  grid: {
+  syllabusContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
+  syllabusItem: {
+    width: '45%',
+    height: 100,
+    backgroundColor: '#d3d3d3',
+    marginVertical: 10,
+    justifyContent: 'center',
     alignItems: 'center',
+    borderRadius: 10,
   },
-  classBox: {
-    backgroundColor: '#ddd',
-    padding: 10,
-    margin: 10,
-    width: 140,
-    alignItems: 'center',
-  },
-  image: {
-    width: 120,
-    height: 120,
-  },
-  classText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginTop: 10,
+  syllabusText: {
+    fontSize: 18,
+    fontFamily: 'Poppins-Regular',
+    color: 'black',
   },
 });
 
-export default syllabusScreen;
+export default SyllabusScreen;
