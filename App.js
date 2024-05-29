@@ -11,6 +11,17 @@ import AssignClass from './screens/AssignClass'; // Adjust the path as needed
 import LoginScreen from './screens/LoginScreen';
 import AdminOptionScreen from './screens/AdminOptionScreen.js';
 
+// Admin Student Screens
+import AdminStudentsScreen from './screens/AdminStudents.js';
+import AddStudentsScreen from './screens/AdminAddStudent.js';
+import EditStudentScreen from './screens/AdminEditStudent.js';
+
+// Admin fee
+import AddFeeScreen from './screens/AdminAddFee.js';
+import EditFeeScreen from './screens/AdminEditFee.js';
+import AdminStudentFeesScreen from './screens/AdminStudentFees.js';
+
+
 // Student Screens
 import StudentOptionScreen from './screens/StudentOptionScreen.js';
 // import AdminScreen from './screens/AdminOptionScreen.js';
@@ -21,6 +32,7 @@ import SyllabusScreen from './screens/SyllabusScreenforStudent.js';
 import StudentScreen from './screens/StudentInfoScreen.js';
 import FeeScreen from './screens/FeeScreenforStudent.js';
 import ResultScreen from './screens/ResultScreenforStudent.js';
+
 
 
 
@@ -56,6 +68,14 @@ const App = () => {
         <Stack.Screen name="Admin" component={AdminScreen} />
         <Stack.Screen name="AssignClass" component={AssignClass} />
 
+        <Stack.Screen name="AdminStudent" component={AdminStudentsScreen} />
+        <Stack.Screen name="AddStudent" component={AddStudentsScreen} />
+        <Stack.Screen name="EditStudent" component={EditStudentScreen}/>
+
+        <Stack.Screen name="AddFee" component={AddFeeScreen}/>
+        <Stack.Screen name="EditFee" component={EditFeeScreen}/>
+        <Stack.Screen name="Fee" component={AdminStudentFeesScreen}/>
+
         {/* Student Screens */}
         <Stack.Screen name="Student" component={StudentOptionScreen} />
         {/* <Stack.Screen name="Admin" component={AdminScreen} /> */}
@@ -64,7 +84,7 @@ const App = () => {
         <Stack.Screen name="Timetable" component={TimetableScreen} />
         <Stack.Screen name="Syllabus" component={SyllabusScreen} />
         <Stack.Screen name="StudentScreen" component={StudentScreen} />
-        <Stack.Screen name="Fee" component={FeeScreen} />
+        {/* <Stack.Screen name="Fee" component={FeeScreen} /> */}
         <Stack.Screen name="Result" component={ResultScreen} />
       </Stack.Navigator>
     </NavigationContainer>

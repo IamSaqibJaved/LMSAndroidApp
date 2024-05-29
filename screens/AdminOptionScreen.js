@@ -7,15 +7,15 @@ const options = [
   { name: 'Class',icon: 'school-outline', screen:"Class" },
   { name: 'Timetable', icon: 'calendar-outline', screen:"Timetable" },
   { name: 'Syllabus', icon: 'book-outline', screen:"Syllabus" },
-  { name: 'Student', icon: 'account-group', screen:"Student" },
+  { name: 'Student', icon: 'account-group', screen:"AdminStudent" },
   { name: 'Fee', icon: 'cash', screen:"Fee" },
   { name: 'Report', icon: 'book-open-page-variant' , screen:"Report"},
   { name: 'Teacher', icon: 'account' , screen:"Teacher"}
 ];
 
 const AdminOptionScreen = ({ navigation }) => {
-  const handlePress = (screen) => {
-    navigation.navigate(screen);
+  const handlePress = (option) => {
+    navigation.navigate(option.screen);
   };
 
   return (
