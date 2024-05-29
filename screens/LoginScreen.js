@@ -1,4 +1,4 @@
-// screens/LoginScreen.js
+
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import auth from '@react-native-firebase/auth';
@@ -11,22 +11,40 @@ const LoginScreen = ({ route, navigation }) => {
   const disableLogin = email==='' || password ==='';
 
   const handleLogin = () => {
-    auth()
-      .signInWithEmailAndPassword(email, password)
-      .then(() => {
+    
+    if (userType === 'Admin') {
+      if(email=="muh.uzair102@gmail.com" && password=="lms1234"){
+        navigation.replace('AdminOptions');
+      } 
+    }
+    else if (userType === 'Student') {
+      if(email=="abc" && password=="123"){
+        navigation.replace('StudentOptions');
+      }
+    } else if (userType === 'Teacher') {
+      if(email=="abc" && password=="123"){
+        navigation.replace('TeacherOptions');     // Ensure TeacherOptions is set up
+      }
+      
+    }
+
+  //   else{
+  //     auth()
+  //     .signInWithEmailAndPassword(email, password)
+  //     .then(() => {
         
-        if (userType === 'Admin') {
-          navigation.replace('AdminOptions');
-        } else if (userType === 'Student') {
-          navigation.replace('StudentOptions');
-        } else if (userType === 'Teacher') {
-          navigation.replace('TeacherOptions');     // Ensure TeacherOptions is set up
-        }
-      })
-      .catch(error => {
-        alert('Login failed. Please check your credentials.');
-      });
-  };
+  //       //  if (userType === 'Student') {
+  //       //   navigation.replace('StudentOptions');
+  //       // } else if (userType === 'Teacher') {
+  //       //   navigation.replace('TeacherOptions');     // Ensure TeacherOptions is set up
+  //       // }
+  //     })
+  //     .catch(error => {
+  //       alert('Login failed. Please check your credentials.');
+  //     });
+  // };
+    }
+    
 
   return (
     <View style={styles.container}>
