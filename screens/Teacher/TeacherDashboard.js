@@ -1,40 +1,29 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import AdminScreen from './AdminScreen'; // Correctly import AdminScreen using a relative path
 
-const HomeScreen = ({ navigation }) => {
-
-  const handlePress = (userType) => {
-    if (userType === 'Admin') {
-      //  navigation.navigate('Login', {userType});
-      navigation.navigate("AdminOptions");
-
+const TeacherDashboard = ({ navigation }) => {
+  const handlePress = (buttonType) => {
+    if (buttonType === 'INSERT MARKS') {
+      navigation.navigate('insert-marks');
     }
-    else if (userType === 'Student'){
-      // navigation.navigate('Login', {userType});
-      navigation.navigate("StudentOptions");
+    else if (buttonType === 'VIEW MARKS'){
+        navigation.navigate('view-marks');
     }
-    else if (accountType === 'Teacher'){
-      navigation.navigate('TeacherDashboard');
-  }
   };
 
 
   return (
     <View style={styles.homeContainer}>
       <View style={styles.contentContainer}>
-        <Text style={styles.homeWelcomeText}>Welcome!</Text>
-        <Text style={styles.homeSelectText}>SELECT ACCOUNT TYPE</Text>
-        <TouchableOpacity style={styles.homeButton} onPress={() => handlePress('Admin')}>
-          <Text style={styles.homeButtonText}>ADMIN</Text>
+        <Text style={styles.homeWelcomeText}>Choose Option</Text>
+        {/* <Text style={styles.homeSelectText}>SELECT ACCOUNT TYPE</Text> */}
+        <TouchableOpacity style={styles.homeButton} onPress={() => handlePress('INSERT MARKS')}>
+          <Text style={styles.homeButtonText}>INSERT MARKS</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.homeButton} onPress={() => handlePress('Teacher')}>
-          <Text style={styles.homeButtonText}>TEACHER</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.homeButton} onPress={() => handlePress('Student')}>
-          <Text style={styles.homeButtonText}>STUDENT</Text>
+        <TouchableOpacity style={styles.homeButton} onPress={() => handlePress('VIEW MARKS')}>
+          <Text style={styles.homeButtonText}>VIEW MARKS</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -88,4 +77,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default HomeScreen;
+export default TeacherDashboard;
