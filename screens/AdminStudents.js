@@ -9,6 +9,9 @@ const AdminStudentsScreen = () => {
   const [students, setStudents] = useState([]);
   const [expandedStudent, setExpandedStudent] = useState(null);
   const [feeStatusData, setFeeStatusData] = useState({});
+  const [showPersonalInfo, setShowPersonalInfo] = useState({});
+  const [showResult, setShowResult] = useState({});
+  const [showFeeStatus, setShowFeeStatus] = useState({});
 
   useEffect(() => {
     const unsubscribe = firestore()
@@ -83,11 +86,30 @@ const AdminStudentsScreen = () => {
     navigation.navigate('AddStudent');
   };
 
+  const toggleVisibility = (id, section) => {
+    if (section === 'personalInfo') {
+      setShowPersonalInfo(prevState => ({
+        ...prevState,
+        [id]: !prevState[id],
+      }));
+    } else if (section === 'result') {
+      setShowResult(prevState => ({
+        ...prevState,
+        [id]: !prevState[id],
+      }));
+    } else if (section === 'feeStatus') {
+      setShowFeeStatus(prevState => ({
+        ...prevState,
+        [id]: !prevState[id],
+      }));
+    }
+  };
+
   const renderItem = ({ item }) => {
     const isExpanded = expandedStudent === item.id;
-    const feeStatus = feeStatusData[item.id];
-
-
+    const isPersonalInfoVisible = showPersonalInfo[item.id];
+    const isResultVisible = showResult[item.id];
+    const isFeeStatusVisible = showFeeStatus[item.id];
 
     return (
       <TouchableOpacity onPress={() => handleToggleExpand(item.id)}>
@@ -95,8 +117,42 @@ const AdminStudentsScreen = () => {
           <View>
             <Text style={styles.regNoText}>{item.regNo}</Text>
             <Text style={styles.nameText}>{item.name}</Text>
-            {isExpanded && (
-              <View style={styles.expandedContent}>
+          </View>
+          <View style={styles.iconContainer}>
+            <TouchableOpacity onPress={() => handleEdit(item, 'student')}>
+              <Icon name="pencil" size={20} color="black" style={styles.icon} />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => handleDelete(item, 'student')}>
+              <Icon name="trash-can-outline" size={20} color="black" style={styles.icon} />
+            </TouchableOpacity>
+          </View>
+        </View>
+        {isExpanded && (
+          <View style={styles.expandedContent}>
+            <View style={styles.buttonRow}>
+              <TouchableOpacity style={styles.actionButtonFullRow} onPress={() => toggleVisibility(item.id, 'personalInfo')}>
+                <Text style={styles.buttonText}>Personal Info</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.actionButtonFullRow} onPress={() => toggleVisibility(item.id, 'result')}>
+                <Text style={styles.buttonText}>Result</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.actionButtonFullRow} onPress={() => toggleVisibility(item.id, 'feeStatus')}>
+                <Text style={styles.buttonText}>Fee Status</Text>
+              </TouchableOpacity>
+            </View>
+            {isPersonalInfoVisible && (
+              <View >
+                <View style={styles.headericon}>
+                <Text style={styles.sectionHeader}>Personal Information</Text>
+                <View style={styles.iconContainer}>
+                  <TouchableOpacity onPress={() => handleEdit(item, 'feeStatus')}>
+                    <Icon name="pencil" size={20} color="black" style={styles.icon} />
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={() => handleDelete(item, 'feeStatus')}>
+                    <Icon name="trash-can-outline" size={20} color="black" style={styles.icon} />
+                  </TouchableOpacity>
+                </View>
+                </View>
                 <Text style={styles.detailText}>Date of Birth: {item.dateOfBirth?.toDate().toLocaleDateString()}</Text>
                 <Text style={styles.detailText}>Date of Admission: {item.dateOfAdmission?.toDate().toLocaleDateString()}</Text>
                 <Text style={styles.detailText}>Gender: {item.gender}</Text>
@@ -104,42 +160,47 @@ const AdminStudentsScreen = () => {
                 <Text style={styles.detailText}>Caste: {item.fatherDetails?.caste}</Text>
                 <Text style={styles.detailText}>Occupation: {item.fatherDetails?.occupation}</Text>
                 <Text style={styles.detailText}>Residence: {item.fatherDetails?.residence}</Text>
-                <TouchableOpacity style={styles.actionButtonFullRow}>
-                  <Text style={styles.buttonText}>Result</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.actionButtonFullRow}
-                  onPress={() => feeStatus ? navigation.navigate('EditFee', { studentId: item.id, feeStatusId: feeStatus.id}) : navigation.navigate('AddFee', { studentId: item.id, regNo: item.regNo, name: item.name})}
-                >
-                  <Text style={styles.buttonText}>{feeStatus ? 'Fee Status' : 'Add Fee Status'}</Text>
-                  {feeStatus && (
-                    <>
-                    <Text style={styles.detailText}>ID: {feeStatus.id}</Text>
-                      <Text style={styles.detailText}>Amount Due: {feeStatus.amountDue}</Text>
-                      <Text style={styles.detailText}>Date Due: {feeStatus.datePaid?.toDate().toLocaleDateString()}</Text>
-                      <Text style={styles.detailText}>Amount Paid: {feeStatus.amountPaid}</Text>
-                      <Text style={styles.detailText}>Date Paid: {feeStatus.datePaid?.toDate().toLocaleDateString()}</Text>
-                      <Text style={styles.detailText}>Payable Amount: {feeStatus.amountDue > feeStatus.amountPaid ? feeStatus.amountDue - feeStatus.amountPaid : 0}</Text>
-                      <Text style={styles.detailText}>Fee Status: {feeStatus.datePaid.toDate() > feeStatus.dueDate.toDate() ? 'Late Fee' : ''}</Text>
-                      <Text style={styles.detailText}>Remarks: {feeStatus.remarks}</Text>
-                      <TouchableOpacity style={styles.editButton} onPress={() => navigation.navigate('EditFee', { studentId: item.id, feeStatusId: feeStatus.id })}>
-                        <Icon name="pencil" size={20} color="black" />
-                      </TouchableOpacity>
-                    </>
-                  )}
-                </TouchableOpacity>
+              </View>
+            )}
+            {isResultVisible && (
+              <View style={styles.headericon}>
+                <Text style={styles.sectionHeader}>Result</Text>
+                {/* Render result details here */}
+                <View style={styles.iconContainer}>
+                  <TouchableOpacity onPress={() => handleEdit(item, 'result')}>
+                    <Icon name="pencil" size={20} color="black" style={styles.icon} />
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={() => handleDelete(item, 'result')}>
+                    <Icon name="trash-can-outline" size={20} color="black" style={styles.icon} />
+                  </TouchableOpacity>
+                </View>
+              </View>
+            )}
+            {isFeeStatusVisible && (
+              <View>
+                <View style={styles.headericon}>
+                <Text style={styles.sectionHeader}>Fee Status</Text>
+                <View style={styles.iconContainer}>
+                  <TouchableOpacity onPress={() => handleEdit(item, 'feeStatus')}>
+                    <Icon name="pencil" size={20} color="black" style={styles.icon} />
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={() => handleDelete(item, 'feeStatus')}>
+                    <Icon name="trash-can-outline" size={20} color="black" style={styles.icon} />
+                  </TouchableOpacity>
+                </View>
+                </View>
+                <Text style={styles.detailText}>ID: {feeStatusData[item.id]?.id}</Text>
+                <Text style={styles.detailText}>Amount Due: {feeStatusData[item.id]?.amountDue}</Text>
+                <Text style={styles.detailText}>Date Due: {feeStatusData[item.id]?.datePaid.toDate().toLocaleDateString()}</Text>
+                <Text style={styles.detailText}>Amount Paid: {feeStatusData[item.id]?.amountPaid}</Text>
+                <Text style={styles.detailText}>Date Paid: {feeStatusData[item.id]?.datePaid?.toDate().toLocaleDateString()}</Text>
+                <Text style={styles.detailText}>Payable Amount: {feeStatusData[item.id]?.amountDue > feeStatusData[item.id]?.amountPaid ? feeStatusData[item.id]?.amountDue - feeStatusData[item.id]?.amountPaid : 0}</Text>
+                <Text style={styles.detailText}>Fee Status: {feeStatusData[item.id]?.datePaid.toDate() > feeStatusData[item.id]?.dueDate.toDate() ? 'Late Fee' : ''}</Text>
+                <Text style={styles.detailText}>Remarks: {feeStatusData[item.id]?.remarks}</Text>
               </View>
             )}
           </View>
-          <View style={styles.iconContainer}>
-            <TouchableOpacity onPress={() => handleEdit(item)}>
-              <Icon name="pencil" size={20} color="black" style={styles.icon} />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => handleDelete(item)}>
-              <Icon name="trash-can-outline" size={20} color="black" style={styles.icon} />
-            </TouchableOpacity>
-          </View>
-        </View>
+        )}
       </TouchableOpacity>
     );
   };
@@ -172,6 +233,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginVertical: 20,
     fontFamily: 'IMFellEnglish-Regular',
+    color: '#000',
   },
   listContainer: {
     paddingBottom: 80, // Add space for the sticky button
@@ -187,22 +249,37 @@ const styles = StyleSheet.create({
   },
   regNoText: {
     fontSize: 16,
-    fontFamily: 'Poppins-SemiBold',
     color: 'black',
   },
   nameText: {
     fontSize: 14,
-    fontFamily: 'Poppins-Regular',
     color: 'black',
+    marginTop: -20,
+    marginLeft: 40,
   },
   expandedContent: {
+    backgroundColor: '#d3f7d3',
+    padding: 15,
     marginTop: 10,
+    borderRadius: 10,
+  },
+  headericon:{
+    flexDirection: 'row',
+    marginRight: 60,
+  },
+  sectionHeader: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    marginRight: 70,
+    color: 'black',
+    // marginLeft: 80,
   },
   detailText: {
     fontSize: 14,
     fontFamily: 'Poppins-Regular',
     color: 'black',
-    marginVertical: 2,
+    marginVertical: 8,
   },
   iconContainer: {
     flexDirection: 'row',
@@ -224,23 +301,25 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.25,
     shadowRadius: 0,
-    elevation: 4, // For Android shadow
+    elevation: 4,
+    
+  },
+  buttonRow: {
+    justifyContent: 'space-between',
+    marginVertical: 10,
   },
   actionButtonFullRow: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#fff',
     paddingVertical: 10,
     paddingHorizontal: 20,
-    borderRadius: 5,
-    marginVertical: 5,
-    width: '100%',
+    borderRadius: 15,
+    marginLeft: 50,
+    width: '70%',
+    marginBottom: 15,
     alignItems: 'center',
   },
-  editButton: {
-    marginTop: 10,
-    alignSelf: 'flex-end',
-  },
   buttonText: {
-    color: 'white',
+    color: 'black',
     fontFamily: 'Poppins-SemiBold',
   },
 });

@@ -4,13 +4,13 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 
 const options = [
-  { name: 'Class',icon: 'school-outline', screen:"Class" },
+  { name: 'Class',icon: 'school-outline', screen:"AdminClass" },
   { name: 'Timetable', icon: 'calendar-outline', screen:"Timetable" },
   { name: 'Syllabus', icon: 'book-outline', screen:"Syllabus" },
   { name: 'Student', icon: 'account-group', screen:"AdminStudent" },
   { name: 'Fee', icon: 'cash', screen:"Fee" },
   { name: 'Report', icon: 'book-open-page-variant' , screen:"Report"},
-  { name: 'Teacher', icon: 'account' , screen:"Teacher"}
+  { name: 'Teacher', icon: 'account' , screen:"AdminTeacherScreen"}
 ];
 
 const AdminOptionScreen = ({ navigation }) => {

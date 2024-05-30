@@ -3,7 +3,6 @@ import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import firestore from '@react-native-firebase/firestore';
 
-const classes = ['Nursery', 'Prep', 'Class 1', 'Class 2', 'Class 3', 'Class 4', 'Class 5', 'Class 6', 'Class 7', 'Class 8'];
 const rooms = ['Room 1', 'Room 2', 'Room 3', 'Room 4', 'Room 5', 'Room 6', 'Room 7', 'Room 8', 'Room 9', 'Room 10', 'Room 11', 'Room 12'];
 
 const classSubjects = {
@@ -19,42 +18,51 @@ const classSubjects = {
   'Class 8': ['English', 'Urdu', 'Math', 'General Knowledge', 'Social Study', 'Islamyat', 'Computer (Part 2)', 'Quran'],
 };
 
-const AssignClass = () => {
-  const [selectedClass, setSelectedClass] = useState(null);
+const EditClassScreen = ({ route, navigation }) => {
+  const { classId } = route.params;
   const [selectedTeacher, setSelectedTeacher] = useState(null);
   const [selectedRoom, setSelectedRoom] = useState(null);
   const [teachers, setTeachers] = useState([]);
-  const [availableClasses, setAvailableClasses] = useState(classes);
   const [availableTeachers, setAvailableTeachers] = useState([]);
   const [availableRooms, setAvailableRooms] = useState(rooms);
 
+  const fetchClassDetails = async () => {
+    try {
+      const classDoc = await firestore().collection('classes').doc(classId).get();
+      if (classDoc.exists) {
+        const classData = classDoc.data();
+        setSelectedTeacher(classData.teacher);
+        setSelectedRoom(classData.room);
+      } else {
+        Alert.alert('Error', 'Class not found');
+      }
+    } catch (error) {
+      console.error('Error fetching class details:', error);
+      Alert.alert('Error', 'Failed to fetch class details.');
+    }
+  };
+
   const fetchTeachersAndAssignments = async () => {
     try {
-      // Fetch all teachers
       const teacherSnapshot = await firestore().collection('teachers').get();
       const teacherList = teacherSnapshot.docs.map(doc => doc.data().name);
       setTeachers(teacherList);
 
-      // Fetch existing class assignments
       const classSnapshot = await firestore().collection('classes').get();
-      const assignedClasses = [];
       const assignedTeachers = [];
       const assignedRooms = [];
 
       classSnapshot.forEach(doc => {
         const classData = doc.data();
-        assignedClasses.push(classData.className);
-        assignedTeachers.push(classData.teacher);
-        assignedRooms.push(classData.room);
+        if (classData.className !== classId) {
+          assignedTeachers.push(classData.teacher);
+          assignedRooms.push(classData.room);
+        }
       });
 
-      // Filter out assigned classes, teachers, and rooms
-      setAvailableClasses(classes.filter(classItem => !assignedClasses.includes(classItem)));
       setAvailableTeachers(teacherList.filter(teacher => !assignedTeachers.includes(teacher)));
       setAvailableRooms(rooms.filter(room => !assignedRooms.includes(room)));
 
-      // Set default selected values
-      if (availableClasses.length > 0) setSelectedClass(availableClasses[0]);
       if (availableTeachers.length > 0) setSelectedTeacher(availableTeachers[0]);
       if (availableRooms.length > 0) setSelectedRoom(availableRooms[0]);
     } catch (error) {
@@ -64,41 +72,30 @@ const AssignClass = () => {
   };
 
   useEffect(() => {
+    fetchClassDetails();
     fetchTeachersAndAssignments();
   }, []);
 
-  const handleAssignClass = async () => {
+  const handleUpdateClass = async () => {
     try {
-      const classRef = firestore().collection('classes').doc(selectedClass);
-      const classDoc = await classRef.get();
+      const subjects = classSubjects[classId];
 
-      if (classDoc.exists) {
-        Alert.alert('Error', 'This class already has an assigned teacher and room.');
-        return;
-      }
-
-      const subjects = classSubjects[selectedClass];
-
-      await classRef.set({
-        className: selectedClass,
+      await firestore().collection('classes').doc(classId).update({
         teacher: selectedTeacher,
         room: selectedRoom,
         subjects: subjects,
       });
 
-      Alert.alert('Success', 'Class assigned successfully!');
-      fetchTeachersAndAssignments();  // Re-fetch data after assignment
+      Alert.alert('Success', 'Class updated successfully!');
+      navigation.goBack();
     } catch (error) {
-      console.error('Error assigning class:', error);
-      Alert.alert('Error', 'Failed to assign class.');
+      console.error('Error updating class:', error);
+      Alert.alert('Error', 'Failed to update class.');
     }
   };
 
   const renderPicker = (selectedValue, onValueChange, items) => (
-    <TouchableOpacity
-      style={styles.pickerContainer}
-      activeOpacity={1}
-    >
+    <TouchableOpacity style={styles.pickerContainer} activeOpacity={1}>
       <Picker
         selectedValue={selectedValue}
         onValueChange={(itemValue) => onValueChange(itemValue)}
@@ -114,17 +111,14 @@ const AssignClass = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>Select Class</Text>
-      {renderPicker(selectedClass, setSelectedClass, availableClasses)}
-
       <Text style={styles.label}>Select Teacher</Text>
       {renderPicker(selectedTeacher, setSelectedTeacher, availableTeachers)}
 
       <Text style={styles.label}>Select Room</Text>
       {renderPicker(selectedRoom, setSelectedRoom, availableRooms)}
 
-      <TouchableOpacity style={styles.button} onPress={handleAssignClass}>
-        <Text style={styles.buttonText}>Assign Class</Text>
+      <TouchableOpacity style={styles.button} onPress={handleUpdateClass}>
+        <Text style={styles.buttonText}>Update Class</Text>
       </TouchableOpacity>
     </View>
   );
@@ -175,4 +169,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AssignClass;
+export default EditClassScreen;

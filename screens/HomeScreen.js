@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import AdminScreen from './AdminScreen'; // Correctly import AdminScreen using a relative path
+import AdminScreen from './AdminClass'; // Correctly import AdminScreen using a relative path
 
 const HomeScreen = ({ navigation }) => {
 
@@ -16,7 +16,7 @@ const HomeScreen = ({ navigation }) => {
       // navigation.navigate('Login', {userType});
       navigation.navigate("StudentOptions");
     }
-    else if (accountType === 'Teacher'){
+    else if (userType === 'Teacher'){
       navigation.navigate('TeacherDashboard');
   }
   };

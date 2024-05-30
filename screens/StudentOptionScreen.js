@@ -5,8 +5,8 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const options = [
   { name: 'Marks',icon: 'chart-line', screen:"Marks" },
-  { name: 'Timetable', icon: 'calendar-outline', screen:"Timetable" },
-  { name: 'Syllabus', icon: 'book-outline', screen:"Syllabus" },
+  { name: 'Timetable', icon: 'calendar-outline', screen:"TimeTableScreenforStudent" },
+  { name: 'Syllabus', icon: 'book-outline', screen:"SyllabusStudent" },
   // { name: 'Student', icon: 'account-group', screen:"Student" },
   { name: 'Fee', icon: 'cash', screen:"Fee" },
   { name: 'Result', icon: 'file-document-edit-outline' , screen:"Result"},

@@ -1,22 +1,45 @@
-// Screens/Timetable.js
-import React from 'react';
-import { View, Text, StyleSheet,Image,TouchableOpacity } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, Image, StyleSheet, ActivityIndicator } from 'react-native';
+import firestore from '@react-native-firebase/firestore';
+import { useRoute } from '@react-navigation/native';
 
-const TimetableScreenforStudent = () => {
+const TimetableScreenForStudent = () => {
+  const [timetableUri, setTimetableUri] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const route = useRoute();
+  const { studentId } = route.params;
+
+  useEffect(() => {
+    const fetchTimetable = async () => {
+      try {
+        const timetableDoc = await firestore().collection('timetable').doc('timetableDoc').get();
+        if (timetableDoc.exists) {
+          setTimetableUri(timetableDoc.data().imageUri);
+        } else {
+          console.error('No timetable document found.');
+        }
+      } catch (error) {
+        console.error('Error fetching timetable:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTimetable();
+  }, []);
+
+  if (loading) {
+    return <ActivityIndicator size="large" color="#0000ff" />;
+  }
+
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Timetable</Text>
-      <View>
-        <Image
-          source={require('../images/time1.jpg')} 
-          style={styles.image} />
-      </View>
-      <TouchableOpacity
-        style={styles.Button}
-        onPress={() => handlePress()}
-      >
-      <Text style={styles.ButtonText}>Open Timetable</Text>
-      </TouchableOpacity>
+      <Text style={styles.header}>Timetable</Text>
+      {timetableUri ? (
+        <Image source={{ uri: timetableUri }} style={styles.image} />
+      ) : (
+        <Text>No Timetable available</Text>
+      )}
     </View>
   );
 };
@@ -24,36 +47,22 @@ const TimetableScreenforStudent = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    padding: 20,
+    backgroundColor: '#fff',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#fff',
   },
-
-  text: {
-    fontSize: 20,
+  header: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    fontFamily: 'IMFellEnglish-Regular',
   },
-  image:{
-    width:230, 
-    height: 230 ,
-    marginBottom: 10,
-    margin: -120,  
+  image: {
+    width: 300,
+    height: 300,
+    borderRadius: 10,
   },
-  Button: {
-      backgroundColor: '#d3f7d3',
-      paddingVertical: 15,
-      paddingHorizontal: 30,
-      borderRadius: 10,
-      marginVertical: 10,
-      width: 220,
-      height: 60,
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    ButtonText: {
-      fontSize: 17,
-      fontFamily: 'Poppins-SemiBold',
-      color: 'black',
-    },
 });
 
-export default TimetableScreenforStudent;
+export default TimetableScreenForStudent;
