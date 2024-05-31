@@ -1,36 +1,43 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import React, { useState, useCallback } from 'react';
+import { View, Text, Image, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
+import { useFocusEffect } from '@react-navigation/native';
 
 const LoginScreen = ({ route, navigation }) => {
   const { userType } = route.params;
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const disableLogin = email === '' || password === '';
 
+  useFocusEffect(
+    useCallback(() => {
+      setEmail('');
+      setPassword('');
+    }, [])
+  );
+
   const handleLogin = async () => {
+    setLoading(true);
     if (userType === 'Admin') {
-      if (email === "muh.uzair102@gmail.com" && password === "lms1234") {
+      if (email === "abc@gmail.com" && password === "123456") {
         navigation.replace('AdminOptions');
+        setLoading(false);
+      } else {
+        Alert.alert('Login failed', 'Invalid email or password');
+        setLoading(false);
       }
     } else if (userType === 'Student') {
       try {
-        // Authenticate student via Firebase Authentication
         const userCredential = await auth().signInWithEmailAndPassword(email, password);
         const user = userCredential.user;
-
-        // Search for student email in Firestore
-        const studentSnapshot = await firestore().collection('students')
-          .where('email', '==', email)
-          .get();
+        const studentSnapshot = await firestore().collection('students').where('email', '==', email).get();
 
         if (!studentSnapshot.empty) {
           const studentDoc = studentSnapshot.docs[0];
           const studentId = studentDoc.id;
-          //Alert.alert(studentId);
-
           navigation.replace('StudentOptions', { studentId });
         } else {
           Alert.alert('Login failed', 'Student record not found');
@@ -38,23 +45,18 @@ const LoginScreen = ({ route, navigation }) => {
       } catch (error) {
         Alert.alert('Login failed', 'Invalid email or password');
         console.error('Login error:', error);
+      } finally {
+        setLoading(false);
       }
     } else if (userType === 'Teacher') {
       try {
-        // Authenticate student via Firebase Authentication
         const userCredential = await auth().signInWithEmailAndPassword(email, password);
         const user = userCredential.user;
-      
-        // Search for student email in Firestore
-        const teacherSnapshot = await firestore().collection('teachers')
-          .where('email', '==', email)
-          .get();
-      
+        const teacherSnapshot = await firestore().collection('teachers').where('email', '==', email).get();
+
         if (!teacherSnapshot.empty) {
           const teacherDoc = teacherSnapshot.docs[0];
           const teacherId = teacherDoc.id;
-          //Alert.alert(studentId);
-      
           navigation.replace('TeacherDashboard', { teacherId });
         } else {
           Alert.alert('Login failed', 'Teacher record not found');
@@ -62,14 +64,21 @@ const LoginScreen = ({ route, navigation }) => {
       } catch (error) {
         Alert.alert('Login failed', 'Invalid email or password');
         console.error('Login error:', error);
+      } finally {
+        setLoading(false);
       }
     }
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{userType} Portal</Text>
+      <Image
+        source={require("../images/logo.png")}
+        style={styles.logo}
+        resizeMode="contain"
+      />
       <TextInput
+      
         style={styles.input}
         placeholder="Email"
         placeholderTextColor="gray"
@@ -81,6 +90,7 @@ const LoginScreen = ({ route, navigation }) => {
       <TextInput
         style={styles.input}
         placeholder="Password"
+        
         placeholderTextColor="gray"
         value={password}
         onChangeText={setPassword}
@@ -89,6 +99,9 @@ const LoginScreen = ({ route, navigation }) => {
       <TouchableOpacity style={styles.button} onPress={handleLogin} disabled={disableLogin}>
         <Text style={styles.buttonText}>LOGIN</Text>
       </TouchableOpacity>
+      {loading && (
+        <ActivityIndicator size="large" color="grey" style={styles.loadingIndicator} />
+      )}
     </View>
   );
 };
@@ -100,6 +113,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#fff',
     padding: 20,
+  },
+  logo: {
+    height: 150,
+    width: 150,
+    marginLeft: 10,
+    marginTop: -180,
   },
   title: {
     fontSize: 24,
@@ -117,7 +136,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins-SemiBold'
   },
   button: {
-    backgroundColor: '#d3f7d3',
+    backgroundColor: '#d6f7e7',
     padding: 15,
     borderRadius: 10,
     marginTop: 20,
@@ -128,6 +147,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: 'black',
     fontFamily: 'Poppins-SemiBold'
+  },
+  loadingIndicator: {
+    marginTop: 20,
   },
 });
 

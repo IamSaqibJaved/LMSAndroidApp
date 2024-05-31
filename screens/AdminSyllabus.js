@@ -58,11 +58,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
+    marginTop: -45,
   },
   syllabusItem: {
     width: '45%',
     height: 100,
-    backgroundColor: '#d3d3d3',
+    backgroundColor: '#d6f7e7',
     marginVertical: 10,
     justifyContent: 'center',
     alignItems: 'center',
@@ -74,5 +75,4 @@ const styles = StyleSheet.create({
     color: 'black',
   },
 });
-
 export default SyllabusScreen;

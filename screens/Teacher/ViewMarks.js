@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useNavigation } from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore';
+import DrawerLayout from 'react-native-drawer-layout';
+import auth from '@react-native-firebase/auth';
 
 const terms = ['First Term', 'Mid Term', 'Final Term'];
 
@@ -13,6 +15,7 @@ const ViewMarks = ({ route }) => {
   const [selectedSubject, setSelectedSubject] = useState('');
   const [subjects, setSubjects] = useState([]);
   const navigation = useNavigation();
+  const drawerRef = useRef(null);
 
   useEffect(() => {
     const fetchSubjects = async () => {
@@ -31,6 +34,16 @@ const ViewMarks = ({ route }) => {
     fetchSubjects();
   }, [teacherId]);
 
+  useEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <TouchableOpacity style={styles.drawerButton} onPress={() => drawerRef.current.openDrawer()}>
+          <Icon name="menu" size={10} color="#000" />
+        </TouchableOpacity>
+      ),
+    });
+  }, [navigation]);
+
   const handleViewMarks = () => {
     if (!selectedSubject) {
       Alert.alert('Error', 'Please select a subject');
@@ -43,38 +56,66 @@ const ViewMarks = ({ route }) => {
     });
   };
 
-  return (
-    <View style={styles.container}>
-      <View style={styles.dropdownContainer}>
-        <Picker
-          selectedValue={selectedTerm}
-          onValueChange={(itemValue) => setSelectedTerm(itemValue)}
-          style={styles.picker}
-        >
-          {terms.map((term, index) => (
-            <Picker.Item key={index} label={term} value={term} style={styles.pickerLabel} />
-          ))}
-        </Picker>
-        <Icon name="arrow-drop-down" size={30} style={styles.pickerIcon} />
-      </View>
+  const handleLogout = async () => {
+    try {
+      await auth().signOut();
+      Alert.alert('Success', 'Logged out successfully');
+      navigation.navigate('login'); // Navigate to the login screen
+    } catch (error) {
+      Alert.alert('Error', 'Failed to log out');
+    }
+  };
 
-      <View style={styles.dropdownContainer}>
-        <Picker
-          selectedValue={selectedSubject}
-          onValueChange={(itemValue) => setSelectedSubject(itemValue)}
-          style={styles.picker}
-        >
-          {subjects.map((subject, index) => (
-            <Picker.Item key={index} label={subject} value={subject} style={styles.pickerLabel} />
-          ))}
-        </Picker>
-        <Icon name="arrow-drop-down" size={30} style={styles.pickerIcon} />
-      </View>
-
-      <TouchableOpacity style={styles.button} onPress={handleViewMarks}>
-        <Text style={styles.buttonText}>View Marks</Text>
+  const renderDrawerContent = () => (
+    <View style={styles.drawerContainer}>
+      <Text style={styles.drawerHeader}>Teacher Info</Text>
+      <Text style={styles.drawerText}>Name: John Doe</Text> {/* Replace with actual data */}
+      <Text style={styles.drawerText}>Email: johndoe@gmail.com</Text> {/* Replace with actual data */}
+      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+        <Text style={styles.logoutButtonText}>Logout</Text>
       </TouchableOpacity>
     </View>
+  );
+
+  return (
+    <DrawerLayout
+      ref={drawerRef}
+      drawerWidth={300}
+      drawerPosition={DrawerLayout.positions.Right}
+      renderNavigationView={renderDrawerContent}
+    >
+      <View style={styles.container}>
+        <View style={styles.dropdownContainer}>
+          <Picker
+            selectedValue={selectedTerm}
+            onValueChange={(itemValue) => setSelectedTerm(itemValue)}
+            style={styles.picker}
+          >
+            {terms.map((term, index) => (
+              <Picker.Item key={index} label={term} value={term} style={styles.pickerLabel} />
+            ))}
+          </Picker>
+          <Icon name="arrow-drop-down" size={30} style={styles.pickerIcon} />
+        </View>
+
+        <View style={styles.dropdownContainer}>
+          <Picker
+            selectedValue={selectedSubject}
+            onValueChange={(itemValue) => setSelectedSubject(itemValue)}
+            style={styles.picker}
+          >
+            {subjects.map((subject, index) => (
+              <Picker.Item key={index} label={subject} value={subject} style={styles.pickerLabel} />
+            ))}
+          </Picker>
+          <Icon name="arrow-drop-down" size={30} style={styles.pickerIcon} />
+        </View>
+
+        <TouchableOpacity style={styles.button} onPress={handleViewMarks}>
+          <Text style={styles.buttonText}>View Marks</Text>
+        </TouchableOpacity>
+      </View>
+    </DrawerLayout>
   );
 };
 
@@ -109,7 +150,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins-SemiBold',
   },
   button: {
-    backgroundColor: '#d3f7d3',
+    backgroundColor: '#d6f7e7',
     paddingVertical: 15,
     paddingHorizontal: 30,
     borderRadius: 10,
@@ -125,6 +166,41 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   buttonText: {
+    fontSize: 17,
+    fontFamily: 'Poppins-SemiBold',
+    color: 'black',
+  },
+  drawerButton: {
+    marginRight: 10,
+    backgroundColor: '#d3f7d3',
+    borderRadius: 50,
+    padding: 10,
+  },
+  drawerContainer: {
+    flex: 1,
+    backgroundColor: '#fff',
+    padding: 20,
+  },
+  drawerHeader: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  drawerText: {
+    fontSize: 18,
+    marginBottom: 10,
+  },
+  logoutButton: {
+    marginTop: 30,
+    paddingVertical: 15,
+    paddingHorizontal: 30,
+    backgroundColor: '#d3f7d3',
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  logoutButtonText: {
     fontSize: 17,
     fontFamily: 'Poppins-SemiBold',
     color: 'black',

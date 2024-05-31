@@ -96,7 +96,12 @@ const TimetableScreen = () => {
             {imageUrl ? (
               <Image source={{ uri: imageUrl }} style={styles.image} />
             ) : (
-              <View style={styles.placeholder} />
+              <Image
+                source={require('../images/timetable.jpg')}
+                style={styles.logo}
+                resizeMode="contain"
+              />
+              
             )}
           </View>
           {uploading ? (
@@ -106,13 +111,18 @@ const TimetableScreen = () => {
             </View>
           ) : (
             <>
-              <TouchableOpacity style={styles.button} onPress={handleImagePick}>
-                <Icon name="cloud-upload" size={20} color="black" style={styles.buttonIcon} />
-                <Text style={styles.buttonText}>Upload Image</Text>
+
+              <TouchableOpacity style={styles.homeButton}onPress={handleImagePick}>
+              <View style={styles.circle}>
+                <Icon name="cloud-upload" size={40} color="#3ca475" />
+              </View>
+                <Text style={styles.homeButtonText}>Upload Image</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.button} onPress={handleRemoveImage}>
-                <Icon name="delete" size={20} color="black" style={styles.buttonIcon} />
-                <Text style={styles.buttonText}>Remove Image</Text>
+              <TouchableOpacity style={styles.homeButton} onPress={handleRemoveImage}>
+              <View style={styles.circle}>
+                <Icon name="delete" size={40} color="#3ca475" />
+              </View>
+                <Text style={styles.homeButtonText}>Delete Image</Text>
               </TouchableOpacity>
             </>
           )}
@@ -123,6 +133,42 @@ const TimetableScreen = () => {
 };
 
 const styles = StyleSheet.create({
+  circle:{
+    width: 80,
+    height:80,
+    borderRadius: 70,
+    backgroundColor: '#d6f7e7',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: -200,
+    bottom: 23, 
+    zIndex: 1,
+  },
+  homeButton: {
+    backgroundColor: '#d6f7e7',
+    paddingVertical: 15,
+    paddingHorizontal: 30,
+    borderRadius: 10,
+    marginVertical: 10,
+    width: 250,
+    height: 60,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 0,
+    elevation: 4,
+    marginBottom: 30,
+    marginLeft: 50,
+  },
+  homeButtonText: {
+    fontSize: 17,
+    fontFamily: 'Poppins-SemiBold',
+    color: 'black',
+    marginTop: -80,
+    marginLeft: 30,
+  },
   container: {
     flex: 1,
     padding: 20,
@@ -134,6 +180,11 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginVertical: 20,
     fontFamily: 'IMFellEnglish-Regular',
+  },
+  logo: {
+    height: 300,
+    width: 300,
+    marginLeft: 10,
   },
   imageContainer: {
     alignItems: 'center',
@@ -147,11 +198,11 @@ const styles = StyleSheet.create({
   placeholder: {
     width: 300,
     height: 300,
-    backgroundColor: '#d3d3d3',
+    backgroundColor: '#d6f7e7',
     borderRadius: 10,
   },
   button: {
-    backgroundColor: '#d3f7d3',
+    backgroundColor: '#d6f7e7',
     paddingVertical: 15,
     paddingHorizontal: 30,
     borderRadius: 10,
@@ -172,6 +223,7 @@ const styles = StyleSheet.create({
     fontSize: 17,
     fontFamily: 'Poppins-SemiBold',
     color: 'black',
+    paddingLeft:10,
   },
   loadingContainer: {
     flex: 1,

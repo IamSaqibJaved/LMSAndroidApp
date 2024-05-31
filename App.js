@@ -16,7 +16,7 @@ import AdminStudentsScreen from './screens/AdminStudents.js';
 import AddStudentsScreen from './screens/AdminAddStudent.js';
 import EditStudentScreen from './screens/AdminEditStudent.js';
 import ViewStudent from './screens/ReportStudents.js';
-
+import AdminResultScreen from './screens/AdminResultScreen.js';
 // Admin fee
 import AddFeeScreen from './screens/AdminAddFee.js';
 import EditFeeScreen from './screens/AdminEditFee.js';
@@ -25,6 +25,10 @@ import TimetableScreen from './screens/AdminTimetable.js';
 import SyllabusScreen from './screens/AdminSyllabus.js';
 import EditSyllabusScreen from './screens/AdminEditSyllabus.js';
 import EditClassScreen from './screens/EditClassScreen.js';
+
+
+import StudentResultDisplay from './screens/ResultDisplayForStudent.js';
+import ViewResults from './screens/ReportResults.js';
 
 // Student Screens
 import StudentOptionScreen from './screens/StudentOptionScreen.js';
@@ -62,8 +66,9 @@ const App = () => {
             headerTitleAlign: 'center',
             headerTitleStyle: {
               fontFamily: 'IMFellEnglish-Regular',
-              fontSize: 25,
               letterSpacing: 10,
+              fontSize: 25,
+      
               color: 'black',
               top: 5,
             },
@@ -75,19 +80,51 @@ const App = () => {
           name="AdminClass" 
           component={AdminScreen} 
           options={{
-            headerTitle: 'Classes',
+            headerTitle: 'Admin Class',
             headerTitleAlign: 'center',
             headerTitleStyle: {
               fontFamily: 'Poppins-SemiBold',
-              fontSize: 22,
+              fontSize: 25,
+             
               color: 'black',
               top: 5,
             },
           }} 
         />
-        <Stack.Screen name="Login" component={LoginScreen} />
-        <Stack.Screen name="AdminOptions" component={AdminOptionScreen} />
-        <Stack.Screen name="Admin" component={AdminScreen} />
+        <Stack.Screen name="Login" component={LoginScreen}
+        options={{
+          headerTitle: 'Login Screen',
+          headerTitleAlign: 'center',
+          headerTitleStyle: {
+            fontFamily: 'Poppins-SemiBold',
+            fontSize: 25,
+           
+            color: 'black',
+            top: 5,
+          },
+        }} />
+        <Stack.Screen name="AdminOptions" component={AdminOptionScreen} 
+        options={{
+          headerTitle: 'Dashboard',
+          headerTitleAlign: 'center',
+          headerTitleStyle: {
+            fontFamily: 'Poppins-SemiBold',
+            fontSize: 25,
+            color: 'black',
+            top: 5,
+          },
+        }}/>
+        <Stack.Screen name="Admin" component={AdminScreen} 
+        options={{
+          headerTitle: 'Admin',
+          headerTitleAlign: 'center',
+          headerTitleStyle: {
+            fontFamily: 'Poppins-SemiBold',
+            fontSize: 25,
+            color: 'black',
+            top: 5,
+          },
+        }}/>
         <Stack.Screen 
           name="AssignClass" 
           component={AssignClass} 
@@ -102,19 +139,187 @@ const App = () => {
             },
           }} 
         />
-        <Stack.Screen name="AdminStudent" component={AdminStudentsScreen} />
-        <Stack.Screen name="AddStudent" component={AddStudentsScreen} />
-        <Stack.Screen name="EditStudent" component={EditStudentScreen} />
-        <Stack.Screen name="AddFee" component={AddFeeScreen} />
-        <Stack.Screen name="EditFee" component={EditFeeScreen} />
-        <Stack.Screen name="Fee" component={AdminStudentFeesScreen} />
-        <Stack.Screen name="Syllabus" component={SyllabusScreen} />
-        <Stack.Screen name="EditSyllabus" component={EditSyllabusScreen} />
-        <Stack.Screen name="Timetable" component={TimetableScreen} />
-        <Stack.Screen name="AdminTeacherScreen" component={AdminTeacherScreen} />
-        <Stack.Screen name="EditClassScreen" component={EditClassScreen} />
-        <Stack.Screen name="Report" component={ViewStudent} />
+        <Stack.Screen name="AdminStudent" component={AdminStudentsScreen} 
+        options={{
+          headerTitle: 'Student',
+          headerTitleAlign: 'center',
+          headerTitleStyle: {
+            fontFamily: 'Poppins-SemiBold',
+            fontSize: 22,
+            color: 'black',
+            top: 5,
+          },
+        }} 
+        />
+        <Stack.Screen name="AddStudent" component={AddStudentsScreen} 
+        options={{
+          headerTitle: 'Add Student',
+          headerTitleAlign: 'center',
 
+          headerTitleStyle: {
+            fontFamily: 'Poppins-SemiBold',
+            fontSize: 22,
+            color: 'black',
+            top: 5,
+          },
+        }} />
+        <Stack.Screen name="EditStudent" component={EditStudentScreen} 
+        options={{
+          headerTitle: 'Edit Student',
+          headerTitleAlign: 'center',
+          headerTitleStyle: {
+            fontFamily: 'Poppins-SemiBold',
+            fontSize: 22,
+            color: 'black',
+            top: 5,
+          },
+        }} />
+        <Stack.Screen name="AddFee" component={AddFeeScreen} 
+        options={{
+          headerTitle: 'Add Fee',
+          headerTitleAlign: 'center',
+          headerTitleStyle: {
+            fontFamily: 'Poppins-SemiBold',
+            fontSize: 22,
+            color: 'black',
+            top: 5,
+          },
+        }} />
+        <Stack.Screen name="EditFee" component={EditFeeScreen} 
+        options={{
+          headerTitle: 'Edit Fee',
+          headerTitleAlign: 'center',
+          headerTitleStyle: {
+            fontFamily: 'Poppins-SemiBold',
+            fontSize: 22,
+            color: 'black',
+            top: 5,
+          },
+        }} />
+        <Stack.Screen name="Fee" component={AdminStudentFeesScreen} 
+        options={{
+          headerTitle: 'Fee Status',
+          headerTitleAlign: 'center',
+          headerTitleStyle: {
+            fontFamily: 'Poppins-SemiBold',
+            fontSize: 22,
+            color: 'black',
+            top: 5,
+          },
+        }} />
+        <Stack.Screen name="Syllabus" component={SyllabusScreen}
+        options={{
+          headerTitle: 'Syllabus',
+          headerTitleAlign: 'center',
+          headerTitleStyle: {
+            fontFamily: 'Poppins-SemiBold',
+            fontSize: 22,
+            color: 'black',
+            top: 5,
+          },
+        }}  />
+        <Stack.Screen name="EditSyllabus" component={EditSyllabusScreen}
+        options={{
+          headerTitle: 'Edit Syllabus',
+          headerTitleAlign: 'center',
+          headerTitleStyle: {
+            fontFamily: 'Poppins-SemiBold',
+            fontSize: 22,
+            color: 'black',
+            top: 5,
+          },
+        }}  />
+        <Stack.Screen name="Timetable" component={TimetableScreen} 
+        options={{
+          headerTitle: 'Timetable',
+          headerTitleAlign: 'center',
+          headerTitleStyle: {
+            fontFamily: 'Poppins-SemiBold',
+            fontSize: 22,
+            color: 'black',
+            top: 5,
+          },
+        }} />
+        <Stack.Screen name="AdminTeacherScreen" component={AdminTeacherScreen}
+        options={{
+          headerTitle: 'Admin Teacher',
+          headerTitleAlign: 'center',
+          headerTitleStyle: {
+            fontFamily: 'Poppins-SemiBold',
+            fontSize: 22,
+            color: 'black',
+            top: 5,
+          },
+        }}  />
+        <Stack.Screen name="EditClassScreen" component={EditClassScreen} 
+        options={{
+          headerTitle: 'Edit Class',
+          headerTitleAlign: 'center',
+          headerTitleStyle: {
+            fontFamily: 'Poppins-SemiBold',
+            fontSize: 22,
+            color: 'black',
+            top: 5,
+          },
+        }} />
+        <Stack.Screen name="Report" component={ViewStudent} 
+        options={{
+          headerTitle: 'Report',
+          headerTitleAlign: 'center',
+          headerTitleStyle: {
+            fontFamily: 'Poppins-SemiBold',
+            fontSize: 22,
+            color: 'black',
+            top: 5,
+          },
+        }} />
+        <Stack.Screen name="AdminResultScreen" component={AdminResultScreen}
+        options={{
+          headerTitle: 'Result',
+          headerTitleAlign: 'center',
+          headerTitleStyle: {
+            fontFamily: 'Poppins-SemiBold',
+            fontSize: 22,
+            color: 'black',
+            top: 5,
+          },
+        }}  />
+
+
+
+        <Stack.Screen name="ReportStudents" component={ViewStudent} 
+        options={{
+          headerTitle: 'Student Report',
+          headerTitleAlign: 'center',
+          headerTitleStyle: {
+            fontFamily: 'Poppins-SemiBold',
+            fontSize: 22,
+            color: 'black',
+            top: 5,
+          },
+        }} />
+        <Stack.Screen name="ReportResults" component={ViewResults}
+        options={{
+          headerTitle: 'Result Report',
+          headerTitleAlign: 'center',
+          headerTitleStyle: {
+            fontFamily: 'Poppins-SemiBold',
+            fontSize: 22,
+            color: 'black',
+            top: 5,
+          },
+        }}  />
+        <Stack.Screen name="ResultDisplay" component={StudentResultDisplay}
+        options={{
+          headerTitle: 'Display Result',
+          headerTitleAlign: 'center',
+          headerTitleStyle: {
+            fontFamily: 'Poppins-SemiBold',
+            fontSize: 22,
+            color: 'black',
+            top: 5,
+          },
+        }} />
 
         {/* STUDENT SCREENS */}
         <Stack.Screen 

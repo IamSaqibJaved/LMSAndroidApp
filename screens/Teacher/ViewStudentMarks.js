@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, TextInput, StyleSheet, FlatList, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import firestore from '@react-native-firebase/firestore';
 
 const ViewStudentMarks = ({ route, navigation }) => {
   const { term, subject, teacherId } = route.params;
   const [students, setStudents] = useState([]);
+  const [filteredStudents, setFilteredStudents] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const fetchStudents = async () => {
     try {
@@ -21,16 +23,35 @@ const ViewStudentMarks = ({ route, navigation }) => {
           const resultSnapshot = await firestore().collection('students').doc(doc.id).collection('result').doc('2024').get();
           if (resultSnapshot.exists) {
             const resultData = resultSnapshot.data();
-            const marks = resultData[term.toLowerCase().replace(' ', '')]?.[subject] ?? 'N/A';
+            const marks = resultData[term.toLowerCase().replace(' ', '')]?.[subject] ?? 'Null';
+            let maxMarks;
+            if (term === 'Final Term') {
+              if (subject === 'Computer (Part 1)') {
+                maxMarks = 70;
+              } else if (subject === 'Computer (Part 2)') {
+                maxMarks = 30;
+              } else {
+                maxMarks = 100;
+              }
+            } else {
+              if (subject === 'Computer (Part 1)') {
+                maxMarks = 35;
+              } else if (subject === 'Computer (Part 2)') {
+                maxMarks = 15;
+              } else {
+                maxMarks = 50;
+              }
+            }
             studentsList.push({
               id: studentData.regNo,
               name: studentData.name,
               studentId: doc.id,
-              marks: `${marks}/${term === 'Final Term' ? 100 : subject.includes('Computer (Part 1)') ? term === 'Final Term' ? 70 : 35 : subject.includes('Computer (Part 2)') ? term === 'Final Term' ? 30 : 15 : 50}`,
+              marks: `${marks}/${maxMarks}`,
             });
           }
         }
         setStudents(studentsList);
+        setFilteredStudents(studentsList); // Initialize filtered students
       }
     } catch (error) {
       console.error('Error fetching students:', error);
@@ -71,6 +92,20 @@ const ViewStudentMarks = ({ route, navigation }) => {
     }
   };
 
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+    if (query.trim() === '') {
+      setFilteredStudents(students);
+    } else {
+      const lowercasedQuery = query.toLowerCase();
+      const filteredList = students.filter((student) =>
+        student.name.toLowerCase().includes(lowercasedQuery) ||
+        student.id.toLowerCase().includes(lowercasedQuery)
+      );
+      setFilteredStudents(filteredList);
+    }
+  };
+
   const renderItem = ({ item }) => (
     <View style={styles.studentCard}>
       <View style={styles.cardContent}>
@@ -80,10 +115,10 @@ const ViewStudentMarks = ({ route, navigation }) => {
       <View style={styles.marksContainer}>
         <Text style={styles.marks}>{item.marks}</Text>
         <TouchableOpacity onPress={() => handleEdit(item.studentId)}>
-          <Icon name="edit" size={20} color="#000" marginRight={10} />
+          <Icon name="edit" size={20} color="#3d9f76" marginRight={10} />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => handleDelete(item.studentId)}>
-          <Icon name="delete" size={20} color="#000" />
+          <Icon name="delete" size={20} color="#3d9f76" />
         </TouchableOpacity>
       </View>
     </View>
@@ -101,8 +136,18 @@ const ViewStudentMarks = ({ route, navigation }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.header}>STUDENTS</Text>
+      <View style={styles.searchContainer}>
+        <Icon name="search" size={20} color="#3d9f76" style={styles.searchIcon} />
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Search"
+          placeholderTextColor={'grey'}
+          value={searchQuery}
+          onChangeText={handleSearch}
+        />
+      </View>
       <FlatList
-        data={students}
+        data={filteredStudents}
         renderItem={renderItem}
         keyExtractor={(item) => item.studentId}
         contentContainerStyle={styles.listContainer}
@@ -124,11 +169,32 @@ const styles = StyleSheet.create({
     marginVertical: 20,
     fontFamily: 'Poppins-SemiBold',
   },
+  searchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#f1f1f1',
+    borderRadius: 10,
+    // padding: 5,
+    marginBottom: 5,
+    marginTop: -70,
+    paddingHorizontal: 10,
+    borderWidth: 1,
+    borderRadius: 10,
+  },
+  searchIcon: {
+    marginRight: 10,
+    marginLeft: 10,
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: 16,
+    color: 'black',
+  },
   listContainer: {
     paddingBottom: 80,
   },
   studentCard: {
-    backgroundColor: '#d3f7d3',
+    backgroundColor: '#d6f7e7',
     borderRadius: 10,
     padding: 15,
     marginVertical: 8,
@@ -156,9 +222,10 @@ const styles = StyleSheet.create({
   },
   marks: {
     fontSize: 16,
-    marginRight: 10,
-    color: 'black',
+    // marginRight: 10,
+    color: '#000',
     fontFamily: 'Poppins-SemiBold',
+    marginRight: 30,
   },
   loadingContainer: {
     flex: 1,

@@ -1,48 +1,57 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, Alert, ScrollView } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore';
 
 const AdminStudentFeesScreen = () => {
   const navigation = useNavigation();
   const [students, setStudents] = useState([]);
   const [feeStatusData, setFeeStatusData] = useState({});
+  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const unsubscribe = firestore()
-      .collection('students')
-      .onSnapshot(querySnapshot => {
-        const studentsList = [];
-        const feeStatusData = {}; 
+  const fetchStudentsAndFees = async () => {
+    setLoading(true);
+    try {
+      const studentsList = [];
+      const feeStatusData = {};
 
-        querySnapshot.forEach(documentSnapshot => {
-          const studentData = documentSnapshot.data();
-          studentsList.push({
-            ...studentData,
-            id: documentSnapshot.id,
-          });
+      const querySnapshot = await firestore().collection('students').get();
 
-          // Fetch fee status for each student
-          documentSnapshot.ref.collection('feeStatus').get().then(feeSnapshot => {
-            if (!feeSnapshot.empty) {
-              feeSnapshot.forEach(doc => {
-                const feeData = doc.data();
-                feeStatusData[documentSnapshot.id] = {
-                  ...feeData,
-                  id: doc.id, // Save feeStatusId
-                };
-              });
-            }
-          });
+      for (const documentSnapshot of querySnapshot.docs) {
+        const studentData = documentSnapshot.data();
+        studentsList.push({
+          ...studentData,
+          id: documentSnapshot.id,
         });
 
-        setStudents(studentsList);
-        setFeeStatusData(feeStatusData);
-      });
+        // Fetch fee status for each student
+        const feeSnapshot = await documentSnapshot.ref.collection('feeStatus').get();
+        if (!feeSnapshot.empty) {
+          feeSnapshot.forEach(doc => {
+            const feeData = doc.data();
+            feeStatusData[documentSnapshot.id] = {
+              ...feeData,
+              id: doc.id, // Save feeStatusId
+            };
+          });
+        }
+      }
 
-    return () => unsubscribe();
-  }, []);
+      setStudents(studentsList);
+      setFeeStatusData(feeStatusData);
+    } catch (error) {
+      console.error('Failed to fetch students or fees:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchStudentsAndFees();
+    }, [])
+  );
 
   const handleToggleExpand = (id) => {
     setStudents(prevStudents =>
@@ -109,7 +118,7 @@ const AdminStudentFeesScreen = () => {
           </View>
           <View style={styles.iconContainer}>
             <TouchableOpacity onPress={() => feeStatus ? handleEdit(item, feeStatus.id) : handleAddFee(item)}>
-              <Icon name={feeStatus ? "pencil" : "plus"} size={20} color="black" style={styles.icon} />
+              <Icon name={feeStatus ? "pencil" : "plus"} size={20} color="#3d9f76" style={styles.icon} />
             </TouchableOpacity>
           </View>
         </View>
@@ -119,13 +128,16 @@ const AdminStudentFeesScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Student Fees</Text>
-      <FlatList
-        data={students}
-        keyExtractor={(item) => item.id}
-        renderItem={renderItem}
-        contentContainerStyle={styles.listContainer}
-      />
+      {loading ? (
+        <ActivityIndicator size="large" color="grey" style={styles.loadingIndicator} />
+      ) : (
+        <FlatList
+          data={students}
+          keyExtractor={(item) => item.id}
+          renderItem={renderItem}
+          contentContainerStyle={styles.listContainer}
+        />
+      )}
     </View>
   );
 };
@@ -148,7 +160,7 @@ const styles = StyleSheet.create({
     paddingBottom: 80, // Add space for the sticky button
   },
   studentItem: {
-    backgroundColor: '#d3f7d3',
+    backgroundColor: '#d6f7e7',
     padding: 15,
     borderRadius: 10,
     marginVertical: 10,
@@ -195,7 +207,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'orange',
   },
   noFeeStatusTag: {
-    backgroundColor: 'grey',
+    backgroundColor: '#3d9f76',
   },
   tagText: {
     color: 'white',
@@ -214,6 +226,9 @@ const styles = StyleSheet.create({
   buttonText: {
     color: 'white',
     fontFamily: 'Poppins-SemiBold',
+  },
+  loadingIndicator: {
+    marginTop: 20,
   },
 });
 

@@ -11,7 +11,7 @@ const AdminStudentsScreen = () => {
   const [expandedStudent, setExpandedStudent] = useState(null);
   const [feeStatusData, setFeeStatusData] = useState({});
   const [showPersonalInfo, setShowPersonalInfo] = useState({});
-  const [showResult, setShowResult] = useState({});
+  // const [showResult, setShowResult] = useState({});
   const [showFeeStatus, setShowFeeStatus] = useState({});
   const [searchQuery, setSearchQuery] = useState('');
   const [filterVisible, setFilterVisible] = useState(false);
@@ -66,6 +66,10 @@ const AdminStudentsScreen = () => {
     navigation.navigate('EditStudent', { student });
   };
 
+  const handleEditFee = (fee) => {
+    navigation.navigate('EditFee', { fee });
+  };
+
   const handleDelete = (student) => {
     Alert.alert(
       "Confirm Deletion",
@@ -104,11 +108,6 @@ const AdminStudentsScreen = () => {
         ...prevState,
         [id]: !prevState[id],
       }));
-    } else if (section === 'result') {
-      setShowResult(prevState => ({
-        ...prevState,
-        [id]: !prevState[id],
-      }));
     } else if (section === 'feeStatus') {
       setShowFeeStatus(prevState => ({
         ...prevState,
@@ -132,7 +131,7 @@ const AdminStudentsScreen = () => {
   const renderItem = ({ item }) => {
     const isExpanded = expandedStudent === item.id;
     const isPersonalInfoVisible = showPersonalInfo[item.id];
-    const isResultVisible = showResult[item.id];
+    //const isResultVisible = showResult[item.id];
     const isFeeStatusVisible = showFeeStatus[item.id];
 
     return (
@@ -145,10 +144,10 @@ const AdminStudentsScreen = () => {
           </View>
           <View style={styles.iconContainer}>
             <TouchableOpacity onPress={() => handleEdit(item, 'student')}>
-              <Icon name="pencil" size={20} color="black" style={styles.icon} />
+              <Icon name="pencil" size={20} color="#3d9f76" style={styles.icon} />
             </TouchableOpacity>
             <TouchableOpacity onPress={() => handleDelete(item, 'student')}>
-              <Icon name="trash-can-outline" size={20} color="black" style={styles.icon} />
+              <Icon name="trash-can-outline" size={20} color="#3d9f76" style={styles.icon} />
             </TouchableOpacity>
           </View>
         </View>
@@ -158,9 +157,6 @@ const AdminStudentsScreen = () => {
               <TouchableOpacity style={styles.actionButtonFullRow} onPress={() => toggleVisibility(item.id, 'personalInfo')}>
                 <Text style={styles.buttonText}>Personal Info</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.actionButtonFullRow} onPress={() => toggleVisibility(item.id, 'result')}>
-                <Text style={styles.buttonText}>Result</Text>
-              </TouchableOpacity>
               <TouchableOpacity style={styles.actionButtonFullRow} onPress={() => toggleVisibility(item.id, 'feeStatus')}>
                 <Text style={styles.buttonText}>Fee Status</Text>
               </TouchableOpacity>
@@ -168,13 +164,13 @@ const AdminStudentsScreen = () => {
             {isPersonalInfoVisible && (
               <View >
                 <View style={styles.headericon}>
-                <Text style={styles.sectionHeader}>Personal Information</Text>
+                <Text style={styles.sectionHeader}>Personal Info</Text>
                 <View style={styles.iconContainer}>
                   <TouchableOpacity onPress={() => handleEdit(item, 'feeStatus')}>
-                    <Icon name="pencil" size={20} color="black" style={styles.icon} />
+                    <Icon name="pencil" size={20} color="#3d9f76" style={styles.icon} />
                   </TouchableOpacity>
                   <TouchableOpacity onPress={() => handleDelete(item, 'feeStatus')}>
-                    <Icon name="trash-can-outline" size={20} color="black" style={styles.icon} />
+                    <Icon name="trash-can-outline" size={20} color="#3d9f76" style={styles.icon} />
                   </TouchableOpacity>
                 </View>
                 </View>
@@ -187,30 +183,16 @@ const AdminStudentsScreen = () => {
                 <Text style={styles.detailText}>Residence: {item.fatherDetails?.residence}</Text>
               </View>
             )}
-            {isResultVisible && (
-              <View style={styles.headericon}>
-                <Text style={styles.sectionHeader}>Result</Text>
-                {/* Render result details here */}
-                <View style={styles.iconContainer}>
-                  <TouchableOpacity onPress={() => handleEdit(item, 'result')}>
-                    <Icon name="pencil" size={20} color="black" style={styles.icon} />
-                  </TouchableOpacity>
-                  <TouchableOpacity onPress={() => handleDelete(item, 'result')}>
-                    <Icon name="trash-can-outline" size={20} color="black" style={styles.icon} />
-                  </TouchableOpacity>
-                </View>
-              </View>
-            )}
             {isFeeStatusVisible && (
               <View>
                 <View style={styles.headericon}>
                 <Text style={styles.sectionHeader}>Fee Status</Text>
                 <View style={styles.iconContainer}>
-                  <TouchableOpacity onPress={() => handleEdit(item, 'feeStatus')}>
-                    <Icon name="pencil" size={20} color="black" style={styles.icon} />
+                  <TouchableOpacity onPress={() => handleEditFee(item, 'feeStatus')}>
+                    <Icon name="pencil" size={20} color="#3d9f76" style={styles.icon} />
                   </TouchableOpacity>
                   <TouchableOpacity onPress={() => handleDelete(item, 'feeStatus')}>
-                    <Icon name="trash-can-outline" size={20} color="black" style={styles.icon} />
+                    <Icon name="trash-can-outline" size={20} color="#3d9f76" style={styles.icon} />
                   </TouchableOpacity>
                 </View>
                 </View>
@@ -234,7 +216,7 @@ const AdminStudentsScreen = () => {
     <View style={styles.container}>
       <View style={styles.searchFilterContainer}>
         <View style={styles.searchBox}>
-          <Icon name="magnify" size={20} color="black" />
+          <Icon name="magnify" size={20} color="#3d9f76" />
           <TextInput
             style={styles.searchInput}
             placeholder="Search"
@@ -243,13 +225,13 @@ const AdminStudentsScreen = () => {
             onChangeText={handleSearch}
           />
         </View>
-        <TouchableOpacity onPress={handleToggleFilter}>
-          <Icon name="filter-variant" size={30} color="black" style={styles.filterIcon} />
-        </TouchableOpacity>
       </View>
       
       {loading ? (
-        <ActivityIndicator size="large" color="grey" style={styles.loadingIndicator}/>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="grey" />
+          <Text style={styles.loadingText}>Loading...</Text>
+        </View>
       ) : (
         <FlatList
           data={filteredStudents}
@@ -259,7 +241,7 @@ const AdminStudentsScreen = () => {
         />
       )}
       <TouchableOpacity style={styles.addButton} onPress={handleAddStudent}>
-        <Icon name="plus" size={30} color="black" />
+        <Icon name="plus" size={30} color= "#3d9f76" />
       </TouchableOpacity>
     </View>
   );
@@ -279,7 +261,9 @@ const styles = StyleSheet.create({
   searchBox: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#d3f7d3',
+    // backgroundColor: 'grey',
+    borderColor: "#abafaf",
+    borderWidth: 1,
     borderRadius: 10,
     paddingHorizontal: 10,
     flex: 1,
@@ -308,7 +292,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   studentItem: {
-    backgroundColor: '#d3f7d3',
+    backgroundColor: '#d6f7e7',
     padding: 15,
     borderRadius: 10,
     marginVertical: 10,
@@ -331,7 +315,7 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
   expandedContent: {
-    backgroundColor: '#d3f7d3',
+    backgroundColor: '#d6f7e7',
     padding: 15,
     marginTop: 10,
     borderRadius: 10,
@@ -344,9 +328,16 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 10,
-    marginRight: 70,
+    marginRight: 100,
     color: 'black',
     // marginLeft: 80,
+  },
+  loadingText: {
+    fontSize: 16,
+    marginTop: 10,
+    color: 'grey',
+    fontFamily: 'Poppins-Regular',
+    textAlign: 'center',
   },
   detailText: {
     fontSize: 14,
@@ -367,7 +358,7 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: '#d3f7d3',
+    backgroundColor: '#d6f7e7',
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: '#000000',

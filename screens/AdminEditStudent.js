@@ -76,7 +76,7 @@ const EditStudentScreen = ({ route, navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>EDIT STUDENT</Text>
+      <Text style={styles.header}>Edit Student</Text>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.section}>
           <Text style={styles.sectionHeader}>Student Details</Text>
@@ -297,7 +297,7 @@ const styles = StyleSheet.create({
     color: 'black',
   },
   submitButton: {
-    backgroundColor: '#d3f7d3',
+    backgroundColor: '#d6f7e7',
     paddingVertical: 15,
     paddingHorizontal: 30,
     borderRadius: 10,

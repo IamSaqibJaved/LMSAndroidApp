@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { View, Text, ImageBackground, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, Image, ImageBackground, TouchableOpacity, StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
@@ -7,16 +7,23 @@ const SplashScreen = ({ navigation }) => {
   useEffect(() => {
     const timer = setTimeout(() => {
       navigation.replace('Home');
-    }, 2000);
+    }, 3000);
     return () => clearTimeout(timer); // Cleanup the timer on component unmount
   }, [navigation]);
 
   return (
     <ImageBackground
-      source={require('../images/Design.png')}
+      source={require("../images/Design.png")}
       style={styles.background}
       resizeMode="cover"
     >
+      <View style={styles.logoContainer}>
+        <Image
+          source={require('../images/logo.png')}
+          style={styles.logo}
+          resizeMode="contain"
+        />
+        </View>
       <View style={styles.container}>
         <Text style={styles.splashText}>SMARTIOUS</Text>
       </View>
@@ -27,8 +34,15 @@ const styles = StyleSheet.create({
   background: {
     flex: 1,
     top: 410,
+    marginTop: 300,
     width: '100%',
-    height: '50%',
+    height: '20%',
+  },
+  logo: {
+    height: 150,
+    width: 150,
+    marginLeft: 118,
+    marginTop: -400,
   },
   container: {
     flex: 1,
@@ -37,7 +51,8 @@ const styles = StyleSheet.create({
     bottom: 100,
   },
   splashText: {
-    fontSize: 28,
+    fontSize: 20,
+    marginTop: -100,
     color: 'black',
     fontFamily: 'IMFellEnglish-Regular',
     letterSpacing: 10,

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, StyleSheet, Alert } from 'react-native';
+import { View, Text, FlatList,ActivityIndicator, StyleSheet, Alert } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 
@@ -63,10 +63,13 @@ const AdminTeacherScreen = () => {
   if (loading) {
     return (
       <View style={styles.container}>
+        <ActivityIndicator size="large" color="grey" />
         <Text style={styles.loadingText}>Loading...</Text>
       </View>
     );
   }
+
+  
 
   return (
     <View style={styles.container}>

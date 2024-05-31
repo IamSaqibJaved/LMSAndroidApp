@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator, Alert, ScrollView } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import { useRoute } from '@react-navigation/native';
 
@@ -40,17 +40,16 @@ const FeeScreenforStudent = () => {
   }, [studentId]);
 
   if (loading) {
-    return <ActivityIndicator size="large" color="#0000ff" />;
+    return <ActivityIndicator size="large" color="grey" />;
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.header}>Fee Status</Text>
+    <ScrollView style={styles.container}>
       {feeStatusData ? (
         feeStatusData.map(feeStatus => (
           <View key={feeStatus.id} style={styles.card}>
-            <Text style={styles.label}>ID:</Text>
-            <Text style={styles.value}>{feeStatus.id}</Text>
+            {/* <Text style={styles.label}>ID:</Text> */}
+            {/* <Text style={styles.value}>{feeStatus.id}</Text> */}
             <Text style={styles.label}>Amount Due:</Text>
             <Text style={styles.value}>{feeStatus.amountDue}</Text>
             <Text style={styles.label}>Date Due:</Text>
@@ -78,7 +77,7 @@ const FeeScreenforStudent = () => {
       ) : (
         <Text>No Fee Status available</Text>
       )}
-    </View>
+    </ScrollView>
   );
 };
 
@@ -95,9 +94,10 @@ const styles = StyleSheet.create({
     marginVertical: 20,
     fontFamily: 'IMFellEnglish-Regular',
     color: 'black',
+  
   },
   card: {
-    backgroundColor: '#d3f7d3',
+    backgroundColor: '#d6f7e7',
     padding: 15,
     borderRadius: 10,
     marginBottom: 20,

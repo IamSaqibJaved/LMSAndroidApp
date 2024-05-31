@@ -1,21 +1,25 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Alert, BackHandler, Image } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore';
+import auth from '@react-native-firebase/auth';
 
 const terms = ['First Term', 'Mid Term', 'Final Term'];
+const userType= 'Teacher';
 
 const ViewMarks = ({ route }) => {
   const { teacherId } = route.params;
   const [selectedTerm, setSelectedTerm] = useState(terms[0]);
   const [selectedSubject, setSelectedSubject] = useState('');
   const [subjects, setSubjects] = useState([]);
+  const [teacherName, setTeacherName] = useState('');
+  const [teacherEmail, setTeacherEmail] = useState('');
   const navigation = useNavigation();
 
   useEffect(() => {
-    const fetchSubjects = async () => {
+    const fetchSubjectsAndTeacherInfo = async () => {
       try {
         const classSnapshot = await firestore().collection('classes').where('teacher', '==', teacherId).get();
         if (!classSnapshot.empty) {
@@ -23,13 +27,61 @@ const ViewMarks = ({ route }) => {
           setSubjects(classData.subjects);
           setSelectedSubject(classData.subjects[0]);
         }
+
+        const teacherDoc = await firestore().collection('teachers').doc(teacherId).get();
+        if (teacherDoc.exists) {
+          const teacherData = teacherDoc.data();
+          setTeacherName(teacherData.name);
+          setTeacherEmail(teacherData.email);
+        }
       } catch (error) {
-        Alert.alert('Error', 'Failed to fetch subjects');
+        Alert.alert('Error', 'Failed to fetch subjects or teacher info');
       }
     };
 
-    fetchSubjects();
+    fetchSubjectsAndTeacherInfo();
   }, [teacherId]);
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <TouchableOpacity style={styles.headerButton} onPress={handleLogout}>
+          <Icon name="logout" size={30} color="#000" />
+        </TouchableOpacity>
+      ),
+    });
+  }, [navigation]);
+
+  useFocusEffect(
+    useCallback(() => {
+      const onBackPress = () => {
+        Alert.alert(
+          'Logout',
+          'Are you sure you want to logout?',
+          [
+            {
+              text: 'No',
+              onPress: () => null,
+              style: 'cancel'
+            },
+            {
+              text: 'Yes',
+              onPress: handleLogout
+            }
+          ],
+          { cancelable: false }
+        );
+        return true; // Prevent default behavior of going back
+      };
+
+      const backHandler = BackHandler.addEventListener(
+        'hardwareBackPress',
+        onBackPress
+      );
+
+      return () => backHandler.remove();
+    }, [])
+  );
 
   const handleViewMarks = () => {
     if (!selectedSubject) {
@@ -43,15 +95,24 @@ const ViewMarks = ({ route }) => {
     });
   };
 
+  const handleLogout = async () => {
+    try {
+      await auth().signOut();
+      Alert.alert('Success', 'Logged out successfully');
+      navigation.replace('Login', {userType}); // Navigate to the login screen
+    } catch (error) {
+      Alert.alert('Error', 'Failed to log out');
+    }
+  };
+
   return (
     <View style={styles.container}>
-      {/* <View style={styles.titleContainer}>
-        <Icon name="assignment" size={30} color="#4CAF50" />
-        <Text style={styles.title}>View Marks</Text>
-      </View> */}
-
+      <Image
+            source={require('./teacher2.jpg')}
+            style={styles.logo}
+            resizeMode="contain"
+          />
       <View style={styles.dropdownContainer}>
-        <Icon name="event" size={30} color="#4CAF50" style={styles.dropdownIcon} />
         <Picker
           selectedValue={selectedTerm}
           onValueChange={(itemValue) => setSelectedTerm(itemValue)}
@@ -65,7 +126,6 @@ const ViewMarks = ({ route }) => {
       </View>
 
       <View style={styles.dropdownContainer}>
-        <Icon name="book" size={30} color="#4CAF50" style={styles.dropdownIcon} />
         <Picker
           selectedValue={selectedSubject}
           onValueChange={(itemValue) => setSelectedSubject(itemValue)}
@@ -79,7 +139,6 @@ const ViewMarks = ({ route }) => {
       </View>
 
       <TouchableOpacity style={styles.button} onPress={handleViewMarks}>
-        <Icon name="visibility" size={25} color="#000" style={styles.buttonIcon} />
         <Text style={styles.buttonText}>View Marks</Text>
       </TouchableOpacity>
     </View>
@@ -93,28 +152,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#fff',
   },
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#4CAF50',
-    marginLeft: 10,
-    fontFamily: 'Poppins-SemiBold',
-  },
   dropdownContainer: {
     width: '80%',
     borderWidth: 1,
     borderRadius: 10,
-    borderColor: '#d3f7d3',
-    backgroundColor: '#d3f7d3',
+    borderColor: '#d6f7e7',
+    backgroundColor: '#d6f7e7',
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 20,
-    paddingHorizontal: 10,
   },
   picker: {
     flex: 1,
@@ -129,17 +175,13 @@ const styles = StyleSheet.create({
   pickerLabel: {
     fontFamily: 'Poppins-SemiBold',
   },
-  dropdownIcon: {
-    marginRight: 10,
-  },
   button: {
-    flexDirection: 'row',
-    backgroundColor: '#d3f7d3',
+    backgroundColor: '#d6f7e7',
     paddingVertical: 15,
     paddingHorizontal: 30,
     borderRadius: 10,
     marginVertical: 10,
-    width: 230,
+    width: 250,
     height: 60,
     alignItems: 'center',
     justifyContent: 'center',
@@ -149,14 +191,21 @@ const styles = StyleSheet.create({
     shadowRadius: 0,
     elevation: 4,
   },
-  buttonIcon: {
-    marginRight: 10,
-
-  },
   buttonText: {
     fontSize: 17,
     fontFamily: 'Poppins-SemiBold',
-    color: '#000',
+    color: 'black',
+  },
+  headerButton: {
+    marginRight: 10,
+    padding: 10,
+  },
+  logo: {
+    height: 200,
+    width: 200,
+    marginLeft: 20,
+    marginTop: 50,
+    marginBottom: 20,
   },
 });
 

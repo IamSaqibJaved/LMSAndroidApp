@@ -1,28 +1,43 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useEffect, useCallback } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-
+import { useNavigation } from '@react-navigation/native';
+import auth from '@react-native-firebase/auth';
 
 const options = [
-  { name: 'Class',icon: 'school-outline', screen:"AdminClass" },
-  { name: 'Timetable', icon: 'calendar-outline', screen:"Timetable" },
-  { name: 'Syllabus', icon: 'book-outline', screen:"Syllabus" },
-  { name: 'Student', icon: 'account-group', screen:"AdminStudent" },
-  { name: 'Fee', icon: 'cash', screen:"Fee" },
-  { name: 'Report', icon: 'book-open-page-variant' , screen:"Report"},
-  { name: 'Teacher', icon: 'account' , screen:"AdminTeacherScreen"}
+  { name: 'Class', icon: 'school-outline', screen: "AdminClass" },
+  { name: 'Timetable', icon: 'calendar-outline', screen: "Timetable" },
+  { name: 'Syllabus', icon: 'book-outline', screen: "Syllabus" },
+  { name: 'Student', icon: 'account-group', screen: "AdminStudent" },
+  { name: 'Fee', icon: 'cash', screen: "Fee" },
+  { name: 'Students Report', icon: 'book-open-page-variant', screen: "ReportStudents" },
+  { name: 'Results Report', icon: 'book-open', screen: "ReportResults" },
+  { name: 'Teacher', icon: 'account', screen: "AdminTeacherScreen" }
 ];
-
+const userType= 'Admin';
 const AdminOptionScreen = ({ navigation }) => {
+  useEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <TouchableOpacity style={styles.headerButton} onPress={handleLogout}>
+          <Icon name="logout" size={30} color="#000" />
+        </TouchableOpacity>
+      ),
+    });
+  }, [navigation]);
 
   const handlePress = (option) => {
     navigation.navigate(option.screen);
+  };
 
-//   const handlePress = (screen) => {
-//     if(screen.name == 'Class'){
-//     navigation.navigate('AdminScreen');
-//     }
-
+  const handleLogout = async () => {
+    try {
+      // await auth().signOut();
+      Alert.alert('Success', 'Logged out successfully');
+      navigation.replace('Login', {userType}); // Navigate to the login screen
+    } catch (error) {
+      Alert.alert('Error', 'Failed to log out');
+    }
   };
 
   return (
@@ -34,7 +49,7 @@ const AdminOptionScreen = ({ navigation }) => {
             style={styles.option}
             onPress={() => handlePress(option)}
           >
-            <Icon name={option.icon} size={50} color="#000" />
+            <Icon name={option.icon} size={50} color="#3d9f76" />
             <Text style={styles.optionText}>{option.name}</Text>
           </TouchableOpacity>
         ))}
@@ -52,7 +67,6 @@ const styles = StyleSheet.create({
     padding: 16,
     borderColor: "#000",
   },
- 
   grid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -61,7 +75,7 @@ const styles = StyleSheet.create({
     marginTop: 33,
   },
   option: {
-    backgroundColor: '#d3f7d3',
+    backgroundColor: '#d6f7e7',
     width: '45%',
     aspectRatio: 1,
     justifyContent: 'center',
@@ -72,8 +86,14 @@ const styles = StyleSheet.create({
   },
   optionText: {
     marginTop: 10,
-    fontSize: 18,
-    color: '#000',
+    letterSpacing: 1,
+    fontSize: 16,
+    fontFamily: 'Poppins-SemiBold',
+    color: 'black',
+  },
+  headerButton: {
+    marginRight: 10,
+    padding: 10,
   },
 });
 

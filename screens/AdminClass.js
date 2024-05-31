@@ -75,10 +75,10 @@ const AdminClassScreen = ({ navigation }) => {
           <Text style={styles.subText}>{`Room #: ${item.room}`}</Text>
           <View style={styles.iconContainer}>
             <TouchableOpacity onPress={() => handleEdit(item)}>
-              <Icon name="pencil" size={20} color="black" style={styles.icon} />
+              <Icon name="pencil" size={20} color="#3d9f76" style={styles.icon} />
             </TouchableOpacity>
             <TouchableOpacity onPress={() => handleDelete(item)}>
-              <Icon name="trash" size={20} color="black" style={styles.icon} />
+              <Icon name="trash" size={20} color="#3d9f76" style={styles.icon} />
             </TouchableOpacity>
           </View>
         </View>
@@ -107,7 +107,7 @@ const AdminClassScreen = ({ navigation }) => {
         />
       )}
       <TouchableOpacity style={styles.addButton} onPress={() => navigation.navigate('AssignClass')}>
-        <Icon name="plus" size={24} color="black" />
+        <Icon name="plus" size={24} color="#3d9f76" />
       </TouchableOpacity>
     </View>
   );
@@ -123,11 +123,12 @@ const styles = StyleSheet.create({
     paddingBottom: 80,
   },
   classItem: {
-    backgroundColor: '#d3f7d3',
+    backgroundColor: '#d6f7e7',
     paddingVertical: 15,
     paddingHorizontal: 20,
     borderRadius: 10,
     marginVertical: 5,
+    paddingBottom: 50,
     shadowColor: '#000000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.25,
@@ -147,7 +148,7 @@ const styles = StyleSheet.create({
   iconContainer: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
-    marginTop: 10,
+    marginTop: -60,
   },
   icon: {
     marginLeft: 15,
@@ -159,7 +160,7 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: '#d3f7d3',
+    backgroundColor: '#d6f7e7',
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: '#000000',
@@ -169,8 +170,10 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   dropdownContent: {
-    backgroundColor: '#f1f1f1',
+    backgroundColor: '#fff',
     padding: 10,
+    borderWidth: 5,
+    borderColor: "#d6f7e7",
     borderRadius: 10,
     marginTop: -10,
     marginBottom: 10,
@@ -188,7 +191,7 @@ const styles = StyleSheet.create({
   loadingText: {
     fontSize: 16,
     marginTop: 10,
-    color: 'black',
+    color: 'grey',
     fontFamily: 'Poppins-Regular',
   },
 });

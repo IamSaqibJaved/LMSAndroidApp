@@ -109,7 +109,6 @@ const EditFeeScreen = ({ navigation, route }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>EDIT FEE</Text>
       <TextInput
         style={styles.input}
         placeholder="Reg#"
@@ -216,9 +215,10 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginVertical: 20,
     fontFamily: 'IMFellEnglish-Regular',
+    color: 'black',
   },
   input: {
-    height: 40,
+    height: 50,
     borderColor: '#ccc',
     borderWidth: 1,
     borderRadius: 5,
@@ -241,7 +241,7 @@ const styles = StyleSheet.create({
     color: 'black',
   },
   submitButton: {
-    backgroundColor: '#d3f7d3',
+    backgroundColor: '#d6f7e7',
     paddingVertical: 15,
     paddingHorizontal: 30,
     borderRadius: 10,

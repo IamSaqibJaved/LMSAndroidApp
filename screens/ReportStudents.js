@@ -161,7 +161,7 @@ const ViewStudent = ({ navigation }) => {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#58B1F4" />
+        <ActivityIndicator size="large" color="grey" />
         <Text style={styles.loadingText}>Loading...</Text>
       </View>
     );
