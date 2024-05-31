@@ -10,19 +10,19 @@ const classSubjects = {
   Nursery: ['English', 'Urdu', 'Math', 'Nazra-e-Quran'],
   Prep: ['English', 'Urdu', 'Math', 'Nazra-e-Quran', 'General Knowledge'],
   'Class 1': ['English', 'Urdu', 'Math', 'General Knowledge', 'Islamyat'],
-  'Class 2': ['English', 'Urdu', 'Math', 'General Knowledge', 'Islamyat', 'Computer (Part 1)'],
-  'Class 3': ['English', 'Urdu', 'Math', 'General Knowledge', 'Islamyat', 'Computer (Part 2)'],
-  'Class 4': ['English', 'Urdu', 'Math', 'General Knowledge', 'Social Study', 'Islamyat', 'Computer (Part 1)'],
-  'Class 5': ['English', 'Urdu', 'Math', 'General Knowledge', 'Social Study', 'Islamyat', 'Computer (Part 2)'],
-  'Class 6': ['English', 'Urdu', 'Math', 'General Knowledge', 'Social Study', 'Islamyat', 'Computer (Part 1)', 'Quran'],
-  'Class 7': ['English', 'Urdu', 'Math', 'General Knowledge', 'Social Study', 'Islamyat', 'Computer (Part 2)', 'Quran'],
-  'Class 8': ['English', 'Urdu', 'Math', 'General Knowledge', 'Social Study', 'Islamyat', 'Computer (Part 2)', 'Quran'],
+  'Class 2': ['English', 'Urdu', 'Math', 'General Knowledge', 'Islamyat', 'Computer (Part 1)', 'Computer (Part 2)'],
+  'Class 3': ['English', 'Urdu', 'Math', 'General Knowledge', 'Islamyat', 'Computer (Part 1)', 'Computer (Part 2)'],
+  'Class 4': ['English', 'Urdu', 'Math', 'General Knowledge', 'Social Study', 'Islamyat','Computer (Part 1)', 'Computer (Part 2)'],
+  'Class 5': ['English', 'Urdu', 'Math', 'General Knowledge', 'Social Study', 'Islamyat','Computer (Part 1)', 'Computer (Part 2)'],
+  'Class 6': ['English', 'Urdu', 'Math', 'General Knowledge', 'Social Study', 'Islamyat','Computer (Part 1)', 'Computer (Part 2)', 'Quran'],
+  'Class 7': ['English', 'Urdu', 'Math', 'General Knowledge', 'Social Study', 'Islamyat','Computer (Part 1)', 'Computer (Part 2)', 'Quran'],
+  'Class 8': ['English', 'Urdu', 'Math', 'General Knowledge', 'Social Study', 'Islamyat','Computer (Part 1)', 'Computer (Part 2)', 'Quran'],
 };
 
 const AssignClass = () => {
-  const [selectedClass, setSelectedClass] = useState(null);
-  const [selectedTeacher, setSelectedTeacher] = useState(null);
-  const [selectedRoom, setSelectedRoom] = useState(null);
+  const [selectedClass, setSelectedClass] = useState('Select Class');
+  const [selectedTeacher, setSelectedTeacher] = useState('Select Teacher');
+  const [selectedRoom, setSelectedRoom] = useState('Select Room');
   const [teachers, setTeachers] = useState([]);
   const [availableClasses, setAvailableClasses] = useState(classes);
   const [availableTeachers, setAvailableTeachers] = useState([]);
@@ -32,8 +32,12 @@ const AssignClass = () => {
     try {
       // Fetch all teachers
       const teacherSnapshot = await firestore().collection('teachers').get();
-      const teacherList = teacherSnapshot.docs.map(doc => doc.data().name);
+      const teacherList = teacherSnapshot.docs.map(doc => ({
+        id: doc.id,
+        name: doc.data().name,
+      }));
       setTeachers(teacherList);
+      console.log('Fetched teachers:', teacherList);
 
       // Fetch existing class assignments
       const classSnapshot = await firestore().collection('classes').get();
@@ -50,13 +54,13 @@ const AssignClass = () => {
 
       // Filter out assigned classes, teachers, and rooms
       setAvailableClasses(classes.filter(classItem => !assignedClasses.includes(classItem)));
-      setAvailableTeachers(teacherList.filter(teacher => !assignedTeachers.includes(teacher)));
+      setAvailableTeachers(teacherList.filter(teacher => !assignedTeachers.includes(teacher.id)).map(teacher => teacher.name));
       setAvailableRooms(rooms.filter(room => !assignedRooms.includes(room)));
 
       // Set default selected values
-      if (availableClasses.length > 0) setSelectedClass(availableClasses[0]);
-      if (availableTeachers.length > 0) setSelectedTeacher(availableTeachers[0]);
-      if (availableRooms.length > 0) setSelectedRoom(availableRooms[0]);
+      if (availableClasses.length > 0 && selectedClass === 'Select Class') setSelectedClass(availableClasses[0]);
+      if (availableTeachers.length > 0 && selectedTeacher === 'Select Teacher') setSelectedTeacher(availableTeachers[0]);
+      if (availableRooms.length > 0 && selectedRoom === 'Select Room') setSelectedRoom(availableRooms[0]);
     } catch (error) {
       console.error('Error fetching data:', error);
       Alert.alert('Error', 'Failed to fetch data.');
@@ -77,11 +81,19 @@ const AssignClass = () => {
         return;
       }
 
+      // Fetch teacher ID based on the selected teacher name
+      const teacherSnapshot = await firestore().collection('teachers').where('name', '==', selectedTeacher).get();
+      if (teacherSnapshot.empty) {
+        Alert.alert('Error', 'Selected teacher does not exist.');
+        return;
+      }
+
+      const teacherId = teacherSnapshot.docs[0].id;
       const subjects = classSubjects[selectedClass];
 
       await classRef.set({
         className: selectedClass,
-        teacher: selectedTeacher,
+        teacher: teacherId,
         room: selectedRoom,
         subjects: subjects,
       });
@@ -94,7 +106,7 @@ const AssignClass = () => {
     }
   };
 
-  const renderPicker = (selectedValue, onValueChange, items) => (
+  const renderPicker = (selectedValue, onValueChange, items, placeholder) => (
     <TouchableOpacity
       style={styles.pickerContainer}
       activeOpacity={1}
@@ -105,6 +117,7 @@ const AssignClass = () => {
         style={styles.picker}
         dropdownIconColor="transparent"
       >
+        <Picker.Item label={placeholder} value={placeholder} />
         {items.map((item, index) => (
           <Picker.Item key={index} label={item} value={item} />
         ))}
@@ -115,13 +128,13 @@ const AssignClass = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.label}>Select Class</Text>
-      {renderPicker(selectedClass, setSelectedClass, availableClasses)}
+      {renderPicker(selectedClass, setSelectedClass, availableClasses, 'Select Class')}
 
       <Text style={styles.label}>Select Teacher</Text>
-      {renderPicker(selectedTeacher, setSelectedTeacher, availableTeachers)}
+      {renderPicker(selectedTeacher, setSelectedTeacher, availableTeachers, 'Select Teacher')}
 
       <Text style={styles.label}>Select Room</Text>
-      {renderPicker(selectedRoom, setSelectedRoom, availableRooms)}
+      {renderPicker(selectedRoom, setSelectedRoom, availableRooms, 'Select Room')}
 
       <TouchableOpacity style={styles.button} onPress={handleAssignClass}>
         <Text style={styles.buttonText}>Assign Class</Text>

@@ -1,20 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Image, StyleSheet, ActivityIndicator } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
-import { useRoute } from '@react-navigation/native';
 
 const TimetableScreenForStudent = () => {
   const [timetableUri, setTimetableUri] = useState(null);
   const [loading, setLoading] = useState(true);
-  const route = useRoute();
-  const { studentId } = route.params;
 
   useEffect(() => {
     const fetchTimetable = async () => {
       try {
-        const timetableDoc = await firestore().collection('timetable').doc('timetableDoc').get();
+        const timetableDoc = await firestore().collection('timetable').doc('current').get();
         if (timetableDoc.exists) {
-          setTimetableUri(timetableDoc.data().imageUri);
+          setTimetableUri(timetableDoc.data().imageUrl);
         } else {
           console.error('No timetable document found.');
         }

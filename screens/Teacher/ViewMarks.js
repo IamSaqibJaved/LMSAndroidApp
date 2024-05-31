@@ -1,27 +1,50 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useNavigation } from '@react-navigation/native';
+import firestore from '@react-native-firebase/firestore';
 
 const terms = ['First Term', 'Mid Term', 'Final Term'];
-const subjects = ['Math', 'English', 'Science', 'Art'];
 
-const ViewMarks = () => {
+const ViewMarks = ({ route }) => {
+  const { teacherId } = route.params;
   const [selectedTerm, setSelectedTerm] = useState(terms[0]);
-  const [selectedSubject, setSelectedSubject] = useState(subjects[0]);
+  const [selectedSubject, setSelectedSubject] = useState('');
+  const [subjects, setSubjects] = useState([]);
   const navigation = useNavigation();
 
+  useEffect(() => {
+    const fetchSubjects = async () => {
+      try {
+        const classSnapshot = await firestore().collection('classes').where('teacher', '==', teacherId).get();
+        if (!classSnapshot.empty) {
+          const classData = classSnapshot.docs[0].data();
+          setSubjects(classData.subjects);
+          setSelectedSubject(classData.subjects[0]);
+        }
+      } catch (error) {
+        Alert.alert('Error', 'Failed to fetch subjects');
+      }
+    };
+
+    fetchSubjects();
+  }, [teacherId]);
+
   const handleViewMarks = () => {
+    if (!selectedSubject) {
+      Alert.alert('Error', 'Please select a subject');
+      return;
+    }
     navigation.navigate('view-student-marks', {
       term: selectedTerm,
       subject: selectedSubject,
+      teacherId,
     });
   };
 
   return (
     <View style={styles.container}>
-      
       <View style={styles.dropdownContainer}>
         <Picker
           selectedValue={selectedTerm}

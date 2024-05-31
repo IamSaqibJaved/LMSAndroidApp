@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import firestore from '@react-native-firebase/firestore';
+import { useFocusEffect } from '@react-navigation/native';
 
 const rooms = ['Room 1', 'Room 2', 'Room 3', 'Room 4', 'Room 5', 'Room 6', 'Room 7', 'Room 8', 'Room 9', 'Room 10', 'Room 11', 'Room 12'];
 
@@ -25,6 +26,7 @@ const EditClassScreen = ({ route, navigation }) => {
   const [teachers, setTeachers] = useState([]);
   const [availableTeachers, setAvailableTeachers] = useState([]);
   const [availableRooms, setAvailableRooms] = useState(rooms);
+  const [loading, setLoading] = useState(true);
 
   const fetchClassDetails = async () => {
     try {
@@ -71,10 +73,18 @@ const EditClassScreen = ({ route, navigation }) => {
     }
   };
 
-  useEffect(() => {
-    fetchClassDetails();
-    fetchTeachersAndAssignments();
-  }, []);
+  useFocusEffect(
+    React.useCallback(() => {
+      const fetchData = async () => {
+        setLoading(true);
+        await fetchClassDetails();
+        await fetchTeachersAndAssignments();
+        setLoading(false);
+      };
+
+      fetchData();
+    }, [])
+  );
 
   const handleUpdateClass = async () => {
     try {
@@ -111,15 +121,24 @@ const EditClassScreen = ({ route, navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>Select Teacher</Text>
-      {renderPicker(selectedTeacher, setSelectedTeacher, availableTeachers)}
+      {loading ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="grey" />
+          <Text style={styles.loadingText}>Loading...</Text>
+        </View>
+      ) : (
+        <>
+          <Text style={styles.label}>Select Teacher</Text>
+          {renderPicker(selectedTeacher, setSelectedTeacher, availableTeachers)}
 
-      <Text style={styles.label}>Select Room</Text>
-      {renderPicker(selectedRoom, setSelectedRoom, availableRooms)}
+          <Text style={styles.label}>Select Room</Text>
+          {renderPicker(selectedRoom, setSelectedRoom, availableRooms)}
 
-      <TouchableOpacity style={styles.button} onPress={handleUpdateClass}>
-        <Text style={styles.buttonText}>Update Class</Text>
-      </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={handleUpdateClass}>
+            <Text style={styles.buttonText}>Update Class</Text>
+          </TouchableOpacity>
+        </>
+      )}
     </View>
   );
 };
@@ -166,6 +185,17 @@ const styles = StyleSheet.create({
     fontSize: 17,
     fontFamily: 'Poppins-SemiBold',
     color: 'black',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    fontSize: 16,
+    marginTop: 10,
+    color: 'black',
+    fontFamily: 'Poppins-Regular',
   },
 });
 

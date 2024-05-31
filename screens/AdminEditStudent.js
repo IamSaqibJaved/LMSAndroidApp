@@ -3,6 +3,7 @@ import { View, Text, TextInput, ScrollView, StyleSheet, Platform, TouchableOpaci
 import { Picker } from '@react-native-picker/picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import firestore from '@react-native-firebase/firestore';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const EditStudentScreen = ({ route, navigation }) => {
   const { student } = route.params;
@@ -13,8 +14,8 @@ const EditStudentScreen = ({ route, navigation }) => {
   const [dateOfBirth, setDateOfBirth] = useState(student.dateOfBirth?.toDate());
   const [showDateOfBirthPicker, setShowDateOfBirthPicker] = useState(false);
 
-  const [regNo, setRegNo] = useState(""+student.regNo);
-  
+  const [regNo, setRegNo] = useState("" + student.regNo);
+
   const [name, setName] = useState(student.name);
   const [classOfAdmission, setClassOfAdmission] = useState(student.classOfAdmission);
   const [fatherName, setFatherName] = useState(student.fatherDetails?.name);
@@ -79,15 +80,28 @@ const EditStudentScreen = ({ route, navigation }) => {
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.section}>
           <Text style={styles.sectionHeader}>Student Details</Text>
-          <TextInput style={styles.input} placeholder="Reg#" placeholderTextColor="grey" value={regNo} onChangeText={setRegNo} keyboardType="numeric" />
-          <TouchableOpacity onPress={() => setShowDateOfAdmissionPicker(true)}>
+          <View style={styles.inputContainer}>
+            <Icon name="account" size={20} color="grey" />
             <TextInput
               style={styles.input}
-              placeholder="Date Of Admission"
+              placeholder="Reg#"
               placeholderTextColor="grey"
-              value={dateOfAdmission ? formatDate(dateOfAdmission) : ''}
-              editable={false}
+              value={regNo}
+              onChangeText={setRegNo}
+              keyboardType="numeric"
             />
+          </View>
+          <TouchableOpacity onPress={() => setShowDateOfAdmissionPicker(true)}>
+            <View style={styles.inputContainer}>
+              <Icon name="calendar" size={20} color="grey" />
+              <TextInput
+                style={styles.input}
+                placeholder="Date Of Admission"
+                placeholderTextColor="grey"
+                value={dateOfAdmission ? formatDate(dateOfAdmission) : ''}
+                editable={false}
+              />
+            </View>
           </TouchableOpacity>
           {showDateOfAdmissionPicker && (
             <DateTimePicker
@@ -97,15 +111,27 @@ const EditStudentScreen = ({ route, navigation }) => {
               onChange={handleDateOfAdmissionChange}
             />
           )}
-          <TextInput style={styles.input} placeholder="Name" placeholderTextColor="grey" value={name} onChangeText={setName} />
-          <TouchableOpacity onPress={() => setShowDateOfBirthPicker(true)}>
+          <View style={styles.inputContainer}>
+            <Icon name="account" size={20} color="grey" />
             <TextInput
               style={styles.input}
-              placeholder="Date Of Birth"
+              placeholder="Name"
               placeholderTextColor="grey"
-              value={dateOfBirth ? formatDate(dateOfBirth) : ''}
-              editable={false}
+              value={name}
+              onChangeText={setName}
             />
+          </View>
+          <TouchableOpacity onPress={() => setShowDateOfBirthPicker(true)}>
+            <View style={styles.inputContainer}>
+              <Icon name="calendar" size={20} color="grey" />
+              <TextInput
+                style={styles.input}
+                placeholder="Date Of Birth"
+                placeholderTextColor="grey"
+                value={dateOfBirth ? formatDate(dateOfBirth) : ''}
+                editable={false}
+              />
+            </View>
           </TouchableOpacity>
           {showDateOfBirthPicker && (
             <DateTimePicker
@@ -115,8 +141,18 @@ const EditStudentScreen = ({ route, navigation }) => {
               onChange={handleDateOfBirthChange}
             />
           )}
-          <TextInput style={styles.input} placeholder="Class of Admission" placeholderTextColor="grey" value={classOfAdmission} onChangeText={setClassOfAdmission} />
+          <View style={styles.inputContainer}>
+            <Icon name="school" size={20} color="grey" />
+            <TextInput
+              style={styles.input}
+              placeholder="Class of Admission"
+              placeholderTextColor="grey"
+              value={classOfAdmission}
+              onChangeText={setClassOfAdmission}
+            />
+          </View>
           <View style={styles.pickerContainer}>
+            <Icon name="gender-male-female" size={20} color="grey" />
             <Picker
               selectedValue={gender}
               onValueChange={(itemValue) => setGender(itemValue)}
@@ -131,14 +167,61 @@ const EditStudentScreen = ({ route, navigation }) => {
         </View>
         <View style={styles.section}>
           <Text style={styles.sectionHeader}>Father Details</Text>
-          <TextInput style={styles.input} placeholder="Name" placeholderTextColor="grey" value={fatherName} onChangeText={setFatherName} />
-          <TextInput style={styles.input} placeholder="Caste" placeholderTextColor="grey" value={caste} onChangeText={setCaste} />
-          <TextInput style={styles.input} placeholder="Occupation" placeholderTextColor="grey" value={occupation} onChangeText={setOccupation} />
-          <TextInput style={styles.input} placeholder="Residence" placeholderTextColor="grey" value={residence} onChangeText={setResidence} />
+          <View style={styles.inputContainer}>
+            <Icon name="account" size={20} color="grey" />
+            <TextInput
+              style={styles.input}
+              placeholder="Name"
+              placeholderTextColor="grey"
+              value={fatherName}
+              onChangeText={setFatherName}
+            />
+          </View>
+          <View style={styles.inputContainer}>
+            <Icon name="account-group" size={20} color="grey" />
+            <TextInput
+              style={styles.input}
+              placeholder="Caste"
+              placeholderTextColor="grey"
+              value={caste}
+              onChangeText={setCaste}
+            />
+          </View>
+          <View style={styles.inputContainer}>
+            <Icon name="briefcase" size={20} color="grey" />
+            <TextInput
+              style={styles.input}
+              placeholder="Occupation"
+              placeholderTextColor="grey"
+              value={occupation}
+              onChangeText={setOccupation}
+            />
+          </View>
+          <View style={styles.inputContainer}>
+            <Icon name="home" size={20} color="grey" />
+            <TextInput
+              style={styles.input}
+              placeholder="Residence"
+              placeholderTextColor="grey"
+              value={residence}
+              onChangeText={setResidence}
+            />
+          </View>
         </View>
         <View style={styles.section}>
           <Text style={styles.sectionHeader}>Remarks</Text>
-          <TextInput style={styles.input} placeholder="Remarks" placeholderTextColor="grey" value={remarks} onChangeText={setRemarks} multiline numberOfLines={4} />
+          <View style={styles.inputContainer}>
+            <Icon name="note" size={20} color="grey" />
+            <TextInput
+              style={styles.input}
+              placeholder="Remarks"
+              placeholderTextColor="grey"
+              value={remarks}
+              onChangeText={setRemarks}
+              multiline
+              numberOfLines={4}
+            />
+          </View>
         </View>
         <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
           <Text style={styles.submitButtonText}>Submit</Text>
@@ -159,6 +242,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginVertical: 20,
     fontFamily: 'IMFellEnglish-Regular',
+    color: '#333',
   },
   scrollContainer: {
     paddingBottom: 20,
@@ -179,41 +263,59 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins-SemiBold',
     color: 'black',
   },
-  input: {
-    height: 40,
-    borderColor: '#ccc',
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
     borderWidth: 1,
+    borderColor: '#ccc',
     borderRadius: 5,
     paddingHorizontal: 10,
     marginBottom: 15,
     backgroundColor: '#fff',
+  },
+  input: {
+    flex: 1,
+    height: 50,
     fontFamily: 'Poppins-Regular',
     color: 'black',
+    paddingLeft: 10,
   },
   pickerContainer: {
-    height: 40,
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: 50,
     borderColor: '#ccc',
     borderWidth: 1,
     borderRadius: 5,
     marginBottom: 15,
-    justifyContent: 'center',
+    paddingHorizontal: 10,
+    backgroundColor: '#fff',
   },
   picker: {
-    height: 40,
+    flex: 1,
+    height: 50,
     color: 'black',
   },
   submitButton: {
-    backgroundColor: '#4CAF50',
-    padding: 15,
+    backgroundColor: '#d3f7d3',
+    paddingVertical: 15,
+    paddingHorizontal: 30,
     borderRadius: 10,
+    marginVertical: 10,
+    width: '60%',
+    alignSelf: 'center',
     alignItems: 'center',
-    marginHorizontal: 20,
-    marginTop: 20,
+    justifyContent: 'center',
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 0,
+    elevation: 4,
   },
   submitButtonText: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#fff',
+    color: '#000',
     fontFamily: 'Poppins-SemiBold',
   },
 });

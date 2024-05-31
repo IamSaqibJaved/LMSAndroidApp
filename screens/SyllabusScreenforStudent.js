@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, Image, StyleSheet, ActivityIndicator, Alert } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import { useRoute } from '@react-navigation/native';
 
@@ -14,18 +14,29 @@ const SyllabusScreenForStudent = () => {
       try {
         const studentDoc = await firestore().collection('students').doc(studentId).get();
         if (studentDoc.exists) {
-          const studentClass = studentDoc.data().class;
-          const syllabusDoc = await firestore().collection('syllabus').doc(studentClass).get();
-          if (syllabusDoc.exists) {
-            setSyllabusUri(syllabusDoc.data().imageUri);
+          const studentClass = studentDoc.data().classOfAdmission; // considering admission class
+          
+          const syllabusQuerySnapshot = await firestore()
+            .collection('syllabus')
+            .where('class', '==', studentClass.toLowerCase())
+            .limit(1)
+            .get();
+
+          if (!syllabusQuerySnapshot.empty) {
+            const syllabusDoc = syllabusQuerySnapshot.docs[0];
+            const syllabusData = syllabusDoc.data();
+            setSyllabusUri(syllabusData.syllabus); // assuming 'syllabus' field contains the image URI
           } else {
             console.error('No syllabus document found for the class.');
+            Alert.alert('Error', 'No syllabus document found for the class.');
           }
         } else {
           console.error('Student document not found.');
+          Alert.alert('Error', 'Student document not found.');
         }
       } catch (error) {
         console.error('Error fetching syllabus:', error);
+        Alert.alert('Error', 'Error fetching syllabus.');
       } finally {
         setLoading(false);
       }
@@ -63,6 +74,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 20,
     fontFamily: 'IMFellEnglish-Regular',
+    color: 'black',
   },
   image: {
     width: 300,

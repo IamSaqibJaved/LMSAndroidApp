@@ -1,4 +1,3 @@
-// AdminEditSyllabus.js
 import React, { useState, useEffect } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { launchImageLibrary } from 'react-native-image-picker';
@@ -15,9 +14,18 @@ const EditSyllabusScreen = () => {
   useEffect(() => {
     const fetchSyllabusImage = async () => {
       try {
-        const doc = await firestore().collection('syllabus').doc(className).get();
-        if (doc.exists && doc.data().syllabus) {
-          setImageUri(doc.data().syllabus);
+        const querySnapshot = await firestore()
+          .collection('syllabus')
+          .where('class', '==', className)
+          .limit(1)
+          .get();
+        
+        if (!querySnapshot.empty) {
+          const doc = querySnapshot.docs[0];
+          const syllabusData = doc.data();
+          if (syllabusData.syllabus) {
+            setImageUri(syllabusData.syllabus);
+          }
         }
       } catch (error) {
         console.error('Error fetching syllabus image:', error);
@@ -43,7 +51,21 @@ const EditSyllabusScreen = () => {
           const url = await reference.getDownloadURL();
           setImageUri(url);
 
-          await firestore().collection('syllabus').doc(className).set({ class: className, syllabus: url });
+          const querySnapshot = await firestore()
+            .collection('syllabus')
+            .where('class', '==', className)
+            .limit(1)
+            .get();
+
+          if (!querySnapshot.empty) {
+            const doc = querySnapshot.docs[0];
+            await doc.ref.update({ syllabus: url });
+          } else {
+            await firestore().collection('syllabus').add({
+              class: className,
+              syllabus: url
+            });
+          }
         } catch (error) {
           console.error('Error uploading image:', error);
         }
@@ -57,7 +79,17 @@ const EditSyllabusScreen = () => {
       const reference = storage().ref(imagePath);
       await reference.delete();
 
-      await firestore().collection('syllabus').doc(className).update({ syllabus: '' });
+      const querySnapshot = await firestore()
+        .collection('syllabus')
+        .where('class', '==', className)
+        .limit(1)
+        .get();
+
+      if (!querySnapshot.empty) {
+        const doc = querySnapshot.docs[0];
+        await doc.ref.update({ syllabus: '' });
+      }
+
       setImageUri(null);
     } catch (error) {
       console.error('Error removing image:', error);

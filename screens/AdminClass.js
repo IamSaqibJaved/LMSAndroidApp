@@ -1,32 +1,51 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import firestore from '@react-native-firebase/firestore';
+import { useFocusEffect } from '@react-navigation/native';
 
 const AdminClassScreen = ({ navigation }) => {
   const [classes, setClasses] = useState([]);
+  const [teachers, setTeachers] = useState({});
   const [openDropdown, setOpenDropdown] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchClasses = async () => {
-      try {
-        const classCollection = await firestore().collection('classes').get();
-        const classList = classCollection.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        classList.sort((a, b) => {
-          const order = ['Nursery', 'Prep', 'Class 1', 'Class 2', 'Class 3', 'Class 4', 'Class 5', 'Class 6', 'Class 7', 'Class 8'];
-          return order.indexOf(a.className) - order.indexOf(b.className);
-        });
-        setClasses(classList);
-      } catch (error) {
-        console.error('Error fetching classes:', error);
-      }
-    };
+  const fetchClassesAndTeachers = async () => {
+    try {
+      setLoading(true);
 
-    fetchClasses();
-  }, []);
+      // Fetch classes
+      const classCollection = await firestore().collection('classes').get();
+      const classList = classCollection.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      classList.sort((a, b) => {
+        const order = ['Nursery', 'Prep', 'Class 1', 'Class 2', 'Class 3', 'Class 4', 'Class 5', 'Class 6', 'Class 7', 'Class 8'];
+        return order.indexOf(a.className) - order.indexOf(b.className);
+      });
+
+      // Fetch teachers
+      const teacherCollection = await firestore().collection('teachers').get();
+      const teacherMap = {};
+      teacherCollection.forEach(doc => {
+        teacherMap[doc.id] = doc.data().name;
+      });
+
+      setClasses(classList);
+      setTeachers(teacherMap);
+    } catch (error) {
+      console.error('Error fetching classes or teachers:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchClassesAndTeachers();
+    }, [])
+  );
 
   const handleEdit = (item) => {
     navigation.navigate('EditClassScreen', { classId: item.id });
@@ -52,7 +71,7 @@ const AdminClassScreen = ({ navigation }) => {
       <TouchableOpacity onPress={() => toggleDropdown(index)}>
         <View style={styles.classItem}>
           <Text style={styles.classText}>{item.className}</Text>
-          <Text style={styles.subText}>{`Assigned to: ${item.teacher}`}</Text>
+          <Text style={styles.subText}>{`Assigned to: ${teachers[item.teacher] || 'Fetching...'}`}</Text>
           <Text style={styles.subText}>{`Room #: ${item.room}`}</Text>
           <View style={styles.iconContainer}>
             <TouchableOpacity onPress={() => handleEdit(item)}>
@@ -74,12 +93,19 @@ const AdminClassScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <FlatList
-        data={classes}
-        keyExtractor={(item) => item.id}
-        renderItem={renderItem}
-        contentContainerStyle={styles.listContainer}
-      />
+      {loading ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="grey" />
+          <Text style={styles.loadingText}>Loading...</Text>
+        </View>
+      ) : (
+        <FlatList
+          data={classes}
+          keyExtractor={(item) => item.id}
+          renderItem={renderItem}
+          contentContainerStyle={styles.listContainer}
+        />
+      )}
       <TouchableOpacity style={styles.addButton} onPress={() => navigation.navigate('AssignClass')}>
         <Icon name="plus" size={24} color="black" />
       </TouchableOpacity>
@@ -148,12 +174,22 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginTop: -10,
     marginBottom: 10,
-    
   },
   dropdownText: {
     fontSize: 14,
     fontFamily: 'Poppins-Regular',
     color: 'black',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    fontSize: 16,
+    marginTop: 10,
+    color: 'black',
+    fontFamily: 'Poppins-Regular',
   },
 });
 

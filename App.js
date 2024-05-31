@@ -15,6 +15,7 @@ import LoginScreen from './screens/LoginScreen';
 import AdminStudentsScreen from './screens/AdminStudents.js';
 import AddStudentsScreen from './screens/AdminAddStudent.js';
 import EditStudentScreen from './screens/AdminEditStudent.js';
+import ViewStudent from './screens/ReportStudents.js';
 
 // Admin fee
 import AddFeeScreen from './screens/AdminAddFee.js';
@@ -40,6 +41,7 @@ import TeacherDashboard from './screens/Teacher/TeacherDashboard.js';
 import InsertMarks from './screens/Teacher/InsertMarks.js';
 import ViewMarks from './screens/Teacher/ViewMarks.js';
 import ViewStudentMarks from './screens/Teacher/ViewStudentMarks.js';
+import EditStudentMarks from './screens/Teacher/EditStudentMarks.js';
 
 const Stack = createStackNavigator();
 
@@ -111,6 +113,7 @@ const App = () => {
         <Stack.Screen name="Timetable" component={TimetableScreen} />
         <Stack.Screen name="AdminTeacherScreen" component={AdminTeacherScreen} />
         <Stack.Screen name="EditClassScreen" component={EditClassScreen} />
+        <Stack.Screen name="Report" component={ViewStudent} />
 
 
         {/* STUDENT SCREENS */}
@@ -205,10 +208,10 @@ const App = () => {
         />
 
         <Stack.Screen 
-          name="TimeTableScreenforStudent" 
+          name="TimetableStudent" 
           component={TimetableScreenforStudent} 
           options={{
-            headerTitle: 'Fee',
+            headerTitle: 'Timetable',
             headerTitleAlign: 'center',
             headerTitleStyle: {
               fontFamily: 'Poppins-SemiBold',
@@ -279,6 +282,20 @@ const App = () => {
         <Stack.Screen 
           name="view-student-marks" 
           component={ViewStudentMarks} 
+          options={{
+            headerTitle: 'Marks',
+            headerTitleAlign: 'center',
+            headerTitleStyle: {
+              fontFamily: 'Poppins-SemiBold',
+              fontSize: 22,
+              color: 'black',
+              top: 5,
+            },
+          }} 
+        />
+        <Stack.Screen 
+          name="edit-student-marks" 
+          component={EditStudentMarks} 
           options={{
             headerTitle: 'Marks',
             headerTitleAlign: 'center',

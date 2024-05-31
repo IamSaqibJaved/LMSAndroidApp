@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
-import auth from '@react-native-firebase/auth';
 
 const LoginScreen = ({ route, navigation }) => {
   const { userType } = route.params;
@@ -11,58 +10,31 @@ const LoginScreen = ({ route, navigation }) => {
   const disableLogin = email === '' || password === '';
 
   const handleLogin = async () => {
-    if (userType === 'Admin') {
-      if (email === "muh.uzair102@gmail.com" && password === "lms1234") {
-        navigation.replace('AdminOptions');
-      }
-    } else if (userType === 'Student') {
-      try {
-        // Authenticate student via Firebase Authentication
-        const userCredential = await auth().signInWithEmailAndPassword(email, password);
-        const user = userCredential.user;
-
-        // Search for student email in Firestore
-        const studentSnapshot = await firestore().collection('students')
-          .where('email', '==', email)
-          .get();
-
-        if (!studentSnapshot.empty) {
-          const studentDoc = studentSnapshot.docs[0];
-          const studentId = studentDoc.id;
-          //Alert.alert(studentId);
-
-          navigation.replace('StudentOptions', { studentId });
-        } else {
-          Alert.alert('Login failed', 'Student record not found');
+    try {
+      if (userType === 'Admin') {
+        if (email === "muh.uzair102@gmail.com" && password === "lms1234") {
+          navigation.replace('AdminOptions');
         }
-      } catch (error) {
-        Alert.alert('Login failed', 'Invalid email or password');
-        console.error('Login error:', error);
-      }
-    } else if (userType === 'Teacher') {
-      try {
-        // Authenticate student via Firebase Authentication
-        const userCredential = await auth().signInWithEmailAndPassword(email, password);
-        const user = userCredential.user;
-      
-        // Search for student email in Firestore
+      } else if (userType === 'Student') {
+        if (email === "abc" && password === "123") {
+          navigation.replace('StudentOptions');
+        }
+      } else if (userType === 'Teacher') {
         const teacherSnapshot = await firestore().collection('teachers')
           .where('email', '==', email)
+          .where('password', '==', password)
           .get();
-      
+
         if (!teacherSnapshot.empty) {
-          const teacherDoc = teacherSnapshot.docs[0];
-          const teacherId = teacherDoc.id;
-          //Alert.alert(studentId);
-      
+          const teacherId = teacherSnapshot.docs[0].id;
           navigation.replace('TeacherDashboard', { teacherId });
         } else {
-          Alert.alert('Login failed', 'Teacher record not found');
+          Alert.alert('Invalid Credentials', 'The email or password you entered is incorrect.');
         }
-      } catch (error) {
-        Alert.alert('Login failed', 'Invalid email or password');
-        console.error('Login error:', error);
       }
+    } catch (error) {
+      console.error('Login error: ', error);
+      Alert.alert('Login Error', 'An error occurred while trying to log in.');
     }
   };
 

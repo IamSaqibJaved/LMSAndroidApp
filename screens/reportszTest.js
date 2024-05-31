@@ -4,7 +4,6 @@ import { Picker } from '@react-native-picker/picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const classes = ['Nursery', 'Prep', 'Class 1', 'Class 2', 'Class 3', 'Class 4', 'Class 5', 'Class 6', 'Class 7', 'Class 8'];
 const classSubjects = {
@@ -13,12 +12,13 @@ const classSubjects = {
     'Class 1': ['English', 'Urdu', 'Math', 'General Knowledge', 'Islamyat'],
     'Class 2': ['English', 'Urdu', 'Math', 'General Knowledge', 'Islamyat', 'Computer (Part 1)', 'Computer (Part 2)'],
     'Class 3': ['English', 'Urdu', 'Math', 'General Knowledge', 'Islamyat', 'Computer (Part 1)', 'Computer (Part 2)'],
-    'Class 4': ['English', 'Urdu', 'Math', 'General Knowledge', 'Social Study', 'Islamyat', 'Computer (Part 1)', 'Computer (Part 2)'],
-    'Class 5': ['English', 'Urdu', 'Math', 'General Knowledge', 'Social Study', 'Islamyat', 'Computer (Part 1)', 'Computer (Part 2)'],
-    'Class 6': ['English', 'Urdu', 'Math', 'General Knowledge', 'Social Study', 'Islamyat', 'Computer (Part 1)', 'Computer (Part 2)', 'Quran'],
-    'Class 7': ['English', 'Urdu', 'Math', 'General Knowledge', 'Social Study', 'Islamyat', 'Computer (Part 1)', 'Computer (Part 2)', 'Quran'],
-    'Class 8': ['English', 'Urdu', 'Math', 'General Knowledge', 'Social Study', 'Islamyat', 'Computer (Part 1)', 'Computer (Part 2)', 'Quran'],
-};
+    'Class 4': ['English', 'Urdu', 'Math', 'General Knowledge', 'Social Study', 'Islamyat','Computer (Part 1)', 'Computer (Part 2)'],
+    'Class 5': ['English', 'Urdu', 'Math', 'General Knowledge', 'Social Study', 'Islamyat','Computer (Part 1)', 'Computer (Part 2)'],
+    'Class 6': ['English', 'Urdu', 'Math', 'General Knowledge', 'Social Study', 'Islamyat','Computer (Part 1)', 'Computer (Part 2)', 'Quran'],
+    'Class 7': ['English', 'Urdu', 'Math', 'General Knowledge', 'Social Study', 'Islamyat','Computer (Part 1)', 'Computer (Part 2)', 'Quran'],
+    'Class 8': ['English', 'Urdu', 'Math', 'General Knowledge', 'Social Study', 'Islamyat','Computer (Part 1)', 'Computer (Part 2)', 'Quran'],
+  };
+  
 
 const generateTermData = (className) => {
     const subjects = classSubjects[className] || [];
@@ -70,17 +70,17 @@ const AddStudentsScreen = ({ navigation }) => {
             Alert.alert("Error", "All fields except Remarks are required");
             return;
         }
-
+    
         const regNumber = parseInt(regNo, 10);
         if (isNaN(regNumber) || regNumber < 0 || regNumber > 1000) {
             Alert.alert("Error", "Registration number must be a number between 0 and 1000");
             return;
         }
-
+    
         try {
             const userCredential = await auth().createUserWithEmailAndPassword(email, password);
             const user = userCredential.user;
-
+    
             const newStudentRef = firestore().collection('students').doc();
             await newStudentRef.set({
                 regNo: regNumber,
@@ -98,7 +98,7 @@ const AddStudentsScreen = ({ navigation }) => {
                 email: email,
                 remarks
             });
-
+    
             const year = dateOfAdmission.getFullYear().toString();
             const initialResultData = {
                 class: classOfAdmission,
@@ -106,9 +106,9 @@ const AddStudentsScreen = ({ navigation }) => {
                 'midterm': generateTermData(classOfAdmission),
                 'finalterm': generateTermData(classOfAdmission),
             };
-
+    
             await newStudentRef.collection('result').doc(year).set(initialResultData);
-
+    
             Alert.alert("Success", "Student added successfully");
             navigation.goBack();
         } catch (error) {
@@ -123,28 +123,15 @@ const AddStudentsScreen = ({ navigation }) => {
             <ScrollView contentContainerStyle={styles.scrollContainer}>
                 <View style={styles.section}>
                     <Text style={styles.sectionHeader}>Student Details</Text>
-                    <View style={styles.inputContainer}>
-                        <Icon name="account" size={20} color="grey" />
+                    <TextInput style={styles.input} placeholder="Reg#" placeholderTextColor="grey" value={regNo} onChangeText={setRegNo} keyboardType="numeric" />
+                    <TouchableOpacity onPress={() => setShowDateOfAdmissionPicker(true)}>
                         <TextInput
                             style={styles.input}
-                            placeholder="Reg#"
+                            placeholder="Date Of Admission"
                             placeholderTextColor="grey"
-                            value={regNo}
-                            onChangeText={setRegNo}
-                            keyboardType="numeric"
+                            value={dateOfAdmission ? formatDate(dateOfAdmission) : ''}
+                            editable={false}
                         />
-                    </View>
-                    <TouchableOpacity onPress={() => setShowDateOfAdmissionPicker(true)}>
-                        <View style={styles.inputContainer}>
-                            <Icon name="calendar" size={20} color="grey" />
-                            <TextInput
-                                style={styles.input}
-                                placeholder="Date Of Admission"
-                                placeholderTextColor="grey"
-                                value={dateOfAdmission ? formatDate(dateOfAdmission) : ''}
-                                editable={false}
-                            />
-                        </View>
                     </TouchableOpacity>
                     {showDateOfAdmissionPicker && (
                         <DateTimePicker
@@ -154,27 +141,15 @@ const AddStudentsScreen = ({ navigation }) => {
                             onChange={handleDateOfAdmissionChange}
                         />
                     )}
-                    <View style={styles.inputContainer}>
-                        <Icon name="account" size={20} color="grey" />
+                    <TextInput style={styles.input} placeholder="Name" placeholderTextColor="grey" value={name} onChangeText={setName} />
+                    <TouchableOpacity onPress={() => setShowDateOfBirthPicker(true)}>
                         <TextInput
                             style={styles.input}
-                            placeholder="Name"
+                            placeholder="Date Of Birth"
                             placeholderTextColor="grey"
-                            value={name}
-                            onChangeText={setName}
+                            value={dateOfBirth ? formatDate(dateOfBirth) : ''}
+                            editable={false}
                         />
-                    </View>
-                    <TouchableOpacity onPress={() => setShowDateOfBirthPicker(true)}>
-                        <View style={styles.inputContainer}>
-                            <Icon name="calendar" size={20} color="grey" />
-                            <TextInput
-                                style={styles.input}
-                                placeholder="Date Of Birth"
-                                placeholderTextColor="grey"
-                                value={dateOfBirth ? formatDate(dateOfBirth) : ''}
-                                editable={false}
-                            />
-                        </View>
                     </TouchableOpacity>
                     {showDateOfBirthPicker && (
                         <DateTimePicker
@@ -185,7 +160,6 @@ const AddStudentsScreen = ({ navigation }) => {
                         />
                     )}
                     <View style={styles.pickerContainer}>
-                        <Icon name="school" size={20} color="grey" />
                         <Picker
                             selectedValue={classOfAdmission}
                             onValueChange={(itemValue) => setClassOfAdmission(itemValue)}
@@ -198,7 +172,6 @@ const AddStudentsScreen = ({ navigation }) => {
                         </Picker>
                     </View>
                     <View style={styles.pickerContainer}>
-                        <Icon name="gender-male-female" size={20} color="grey" />
                         <Picker
                             selectedValue={gender}
                             onValueChange={(itemValue) => setGender(itemValue)}
@@ -213,87 +186,20 @@ const AddStudentsScreen = ({ navigation }) => {
                 </View>
                 <View style={styles.section}>
                     <Text style={styles.sectionHeader}>Father Details</Text>
-                    <View style={styles.inputContainer}>
-                        <Icon name="account" size={20} color="grey" />
-                        <TextInput
-                            style={styles.input}
-                            placeholder="Name"
-                            placeholderTextColor="grey"
-                            value={fatherName}
-                            onChangeText={setFatherName}
-                        />
-                    </View>
-                    <View style={styles.inputContainer}>
-                        <Icon name="account-group" size={20} color="grey" />
-                        <TextInput
-                            style={styles.input}
-                            placeholder="Caste"
-                            placeholderTextColor="grey"
-                            value={caste}
-                            onChangeText={setCaste}
-                        />
-                    </View>
-                    <View style={styles.inputContainer}>
-                        <Icon name="briefcase" size={20} color="grey" />
-                        <TextInput
-                            style={styles.input}
-                            placeholder="Occupation"
-                            placeholderTextColor="grey"
-                            value={occupation}
-                            onChangeText={setOccupation}
-                        />
-                    </View>
-                    <View style={styles.inputContainer}>
-                        <Icon name="home" size={20} color="grey" />
-                        <TextInput
-                            style={styles.input}
-                            placeholder="Residence"
-                            placeholderTextColor="grey"
-                            value={residence}
-                            onChangeText={setResidence}
-                        />
-                    </View>
+                    <TextInput style={styles.input} placeholder="Name" placeholderTextColor="grey" value={fatherName} onChangeText={setFatherName} />
+                    <TextInput style={styles.input} placeholder="Caste" placeholderTextColor="grey" value={caste} onChangeText={setCaste} />
+                    <TextInput style={styles.input} placeholder="Occupation" placeholderTextColor="grey" value={occupation} onChangeText={setOccupation} />
+                    <TextInput style={styles.input} placeholder="Residence" placeholderTextColor="grey" value={residence} onChangeText={setResidence} />
                 </View>
                 <View style={styles.section}>
                     <Text style={styles.sectionHeader}>Account Details</Text>
-                    <View style={styles.inputContainer}>
-                        <Icon name="email" size={20} color="grey" />
-                        <TextInput
-                            style={styles.input}
-                            placeholder="Email"
-                            placeholderTextColor="grey"
-                            value={email}
-                            onChangeText={setEmail}
-                            keyboardType="email-address"
-                        />
-                    </View>
-                    <View style={styles.inputContainer}>
-                        <Icon name="lock" size={20} color="grey" />
-                        <TextInput
-                            style={styles.input}
-                            placeholder="Password"
-                            secureTextEntry
-                            placeholderTextColor="grey"
-                            value={password}
-                            onChangeText={setPassword}
-                        />
-                    </View>
+                    <TextInput style={styles.input} placeholder="Email" placeholderTextColor="grey" value={email} onChangeText={setEmail} keyboardType="email-address" />
+                    <TextInput style={styles.input} placeholder="Password" secureTextEntry placeholderTextColor="grey" value={password} onChangeText={setPassword} />
                 </View>
                 <View style={styles.section}>
-          <Text style={styles.sectionHeader}>Remarks</Text>
-          <View style={styles.inputContainer}>
-            <Icon name="note" size={20} color="grey" />
-            <TextInput
-              style={styles.input}
-              placeholder="Remarks"
-              placeholderTextColor="grey"
-              value={remarks}
-              onChangeText={setRemarks}
-              multiline
-              numberOfLines={4}
-            />
-          </View>
-        </View>
+                    <Text style={styles.sectionHeader}>Remarks</Text>
+                    <TextInput style={styles.input} placeholder="Remarks" placeholderTextColor="grey" value={remarks} onChangeText={setRemarks} multiline numberOfLines={4} />
+                </View>
                 <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
                     <Text style={styles.submitButtonText}>Submit</Text>
                 </TouchableOpacity>
@@ -333,54 +239,45 @@ const styles = StyleSheet.create({
         fontFamily: 'Poppins-SemiBold',
         color: 'black',
     },
-    inputContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        borderWidth: 1,
+    input: {
+        height: 50,
         borderColor: '#ccc',
+        borderWidth: 1,
         borderRadius: 5,
         paddingHorizontal: 10,
         marginBottom: 15,
         backgroundColor: '#fff',
-    },
-    input: {
-        flex: 1,
-        height: 50,
         fontFamily: 'Poppins-Regular',
         color: 'black',
-        paddingLeft: 10,
     },
     pickerContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        height: 50,
+        height: 40,
         borderColor: '#ccc',
         borderWidth: 1,
         borderRadius: 5,
         marginBottom: 15,
-        paddingHorizontal: 10,
-        backgroundColor: '#fff',
+        justifyContent: 'center',
     },
     picker: {
-        flex: 1,
-        height: 50,
+        height: 40,
         color: 'black',
     },
     submitButton: {
-        backgroundColor: '#d3f7d3',
-        paddingVertical: 15,
-        paddingHorizontal: 30,
-        borderRadius: 10,
-        marginVertical: 10,
-        width: '60%',
-        alignSelf: 'center',
-        alignItems: 'center',
-        justifyContent: 'center',
-        shadowColor: '#000000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.25,
-        shadowRadius: 0,
-        elevation: 4,
+    backgroundColor: '#d3f7d3',
+    paddingVertical: 15,
+    paddingHorizontal: 30,
+    borderRadius: 10,
+    marginVertical: 10,
+    width: 250,
+    height: 60,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 0,
+    elevation: 4,
+    left:90,
     },
     submitButtonText: {
         fontSize: 18,

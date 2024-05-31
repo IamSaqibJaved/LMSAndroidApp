@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, Alert, ScrollView } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useNavigation } from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore';
@@ -7,7 +7,6 @@ import firestore from '@react-native-firebase/firestore';
 const AdminStudentFeesScreen = () => {
   const navigation = useNavigation();
   const [students, setStudents] = useState([]);
-  const [expandedStudent, setExpandedStudent] = useState(null);
   const [feeStatusData, setFeeStatusData] = useState({});
 
   useEffect(() => {
@@ -15,7 +14,7 @@ const AdminStudentFeesScreen = () => {
       .collection('students')
       .onSnapshot(querySnapshot => {
         const studentsList = [];
-        const feeStatusData = {}; // Temporary object to store fee status data
+        const feeStatusData = {}; 
 
         querySnapshot.forEach(documentSnapshot => {
           const studentData = documentSnapshot.data();
@@ -46,7 +45,11 @@ const AdminStudentFeesScreen = () => {
   }, []);
 
   const handleToggleExpand = (id) => {
-    setExpandedStudent(expandedStudent === id ? null : id);
+    setStudents(prevStudents =>
+      prevStudents.map(student =>
+        student.id === id ? { ...student, expanded: !student.expanded } : student
+      )
+    );
   };
 
   const handleEdit = (student, feeStatusId) => {
@@ -58,7 +61,7 @@ const AdminStudentFeesScreen = () => {
   };
 
   const renderItem = ({ item }) => {
-    const isExpanded = expandedStudent === item.id;
+    const isExpanded = item.expanded;
     const feeStatus = feeStatusData[item.id];
 
     return (
@@ -71,7 +74,7 @@ const AdminStudentFeesScreen = () => {
               <>
                 {feeStatus.amountDue > feeStatus.amountPaid && (
                   <View style={[styles.tag, styles.payableTag]}>
-                    <Text style={styles.tagText}>Payable Amount</Text>
+                    <Text style={styles.tagText}>Payable Fee</Text>
                   </View>
                 )}
                 {feeStatus.datePaid.toDate() > feeStatus.dueDate.toDate() && (
@@ -87,16 +90,20 @@ const AdminStudentFeesScreen = () => {
             )}
             {isExpanded && feeStatus && (
               <View style={styles.expandedContent}>
-                <Text style={styles.detailText}>Amount Due: {feeStatus.amountDue}</Text>
-                <Text style={styles.detailText}>Date Due: {feeStatus.dueDate?.toDate().toLocaleDateString()}</Text>
-                <Text style={styles.detailText}>Amount Paid: {feeStatus.amountPaid}</Text>
-                <Text style={styles.detailText}>Date Paid: {feeStatus.datePaid?.toDate().toLocaleDateString()}</Text>
-                <Text style={styles.detailText}>Payable Amount: {feeStatus.amountDue > feeStatus.amountPaid ? feeStatus.amountDue - feeStatus.amountPaid : 0}</Text>
-                <Text style={styles.detailText}>Fee Status: {feeStatus.datePaid.toDate() > feeStatus.dueDate.toDate() ? 'Late Fee' : 'Clear'}</Text>
-                <Text style={styles.detailText}>Remarks: {feeStatus.remarks}</Text>
-                <TouchableOpacity style={styles.editButton} onPress={() => handleEdit(item, feeStatus.id)}>
-                  <Icon name="pencil" size={20} color="black" />
-                </TouchableOpacity>
+                <Text style={styles.detailHeader}>Payable Amount</Text>
+                <Text style={styles.detailText}>{feeStatus.amountDue > feeStatus.amountPaid ? feeStatus.amountDue - feeStatus.amountPaid : 0}</Text>
+                <Text style={styles.detailHeader}>Fee Status</Text>
+                <Text style={styles.detailText}>{feeStatus.datePaid.toDate() > feeStatus.dueDate.toDate() ? 'Late Fee' : 'Clear'}</Text>
+                <Text style={styles.detailHeader}>Amount Due</Text>
+                <Text style={styles.detailText}>{feeStatus.amountDue}</Text>
+                <Text style={styles.detailHeader}>Date Due</Text>
+                <Text style={styles.detailText}>{feeStatus.dueDate?.toDate().toLocaleDateString()}</Text>
+                <Text style={styles.detailHeader}>Amount Paid</Text>
+                <Text style={styles.detailText}>{feeStatus.amountPaid}</Text>
+                <Text style={styles.detailHeader}>Date Paid</Text>
+                <Text style={styles.detailText}>{feeStatus.datePaid?.toDate().toLocaleDateString()}</Text>
+                <Text style={styles.detailHeader}>Remarks</Text>
+                <Text style={styles.detailText}>{feeStatus.remarks}</Text>
               </View>
             )}
           </View>
@@ -112,7 +119,7 @@ const AdminStudentFeesScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>STUDENT FEES</Text>
+      <Text style={styles.header}>Student Fees</Text>
       <FlatList
         data={students}
         keyExtractor={(item) => item.id}
@@ -133,6 +140,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     textAlign: 'center',
+    color: 'black',
     marginVertical: 20,
     fontFamily: 'IMFellEnglish-Regular',
   },
@@ -150,22 +158,30 @@ const styles = StyleSheet.create({
   },
   regNoText: {
     fontSize: 16,
-    fontFamily: 'Poppins-SemiBold',
     color: 'black',
   },
   nameText: {
     fontSize: 14,
-    fontFamily: 'Poppins-Regular',
     color: 'black',
+    marginTop: -20,
+    marginLeft: 40,
   },
   expandedContent: {
+    backgroundColor: '#f0f0f0',
+    padding: 15,
     marginTop: 10,
+    borderRadius: 10,
+  },
+  detailHeader: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: 'black',
+    marginVertical: 2,
   },
   detailText: {
     fontSize: 14,
-    fontFamily: 'Poppins-Regular',
     color: 'black',
-    marginVertical: 2,
+    marginBottom: 10,
   },
   tag: {
     borderRadius: 5,
@@ -173,10 +189,10 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
   payableTag: {
-    backgroundColor: 'orange',
+    backgroundColor: 'red',
   },
   lateFeeTag: {
-    backgroundColor: 'red',
+    backgroundColor: 'orange',
   },
   noFeeStatusTag: {
     backgroundColor: 'grey',

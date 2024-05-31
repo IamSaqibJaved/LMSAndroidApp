@@ -1,40 +1,141 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
-import Icon from 'react-native-vector-icons/MaterialIcons'; // Make sure to install react-native-vector-icons
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import firestore from '@react-native-firebase/firestore';
 
-const terms = ['First Term', 'Mid Term', 'Final Term'];
-const subjects = ['Math', 'English', 'Science', 'Art'];
-const students = ['FA21-BCS-001', 'FA21-BCS-002', 'FA21-BCS-003', 'FA21-BCS-004'];
+const terms = ['Select Term', 'First Term', 'Mid Term', 'Final Term'];
 
-const InsertMarks = () => {
-  const [selectedTerm, setSelectedTerm] = useState(terms[0]);
-  const [selectedSubject, setSelectedSubject] = useState(subjects[0]);
-  const [selectedStudent, setSelectedStudent] = useState(students[0]);
+const InsertMarks = ({ route, navigation }) => {
+  const { teacherId, studentId, term, subject } = route.params;
+  const [selectedTerm, setSelectedTerm] = useState(term || terms[0]);
+  const [selectedSubject, setSelectedSubject] = useState(subject || '');
+  const [selectedStudent, setSelectedStudent] = useState(studentId || '');
+  const [subjects, setSubjects] = useState([]);
+  const [students, setStudents] = useState([]);
   const [marks, setMarks] = useState('');
   const [maxMarks, setMaxMarks] = useState(50);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchClassAndSubjects = async () => {
+      try {
+        const classesSnapshot = await firestore().collection('classes').where('tid', '==', teacherId).get();
+        if (!classesSnapshot.empty) {
+          const classData = classesSnapshot.docs[0].data();
+          const className = classData.className;
+          setSubjects(classData.subjects);
+          setSelectedSubject('');  // Reset the selected subject
+
+          const studentsSnapshot = await firestore().collection('students').where('classOfAdmission', '==', className).get();
+          const studentsList = studentsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+          setStudents(studentsList);
+          setSelectedStudent('');  // Reset the selected student
+        }
+
+        // If editing, fetch the existing marks
+        if (studentId && term && subject) {
+          const resultSnapshot = await firestore().collection('students').doc(studentId).collection('result').doc('2024').get();
+          if (resultSnapshot.exists) {
+            const resultData = resultSnapshot.data();
+            const existingMarks = resultData[term.toLowerCase().replace(' ', '')]?.[subject] || '';
+            setMarks(existingMarks.toString());
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching class and subjects:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchClassAndSubjects();
+  }, [teacherId, studentId, term, subject]);
+
+  useEffect(() => {
+    updateMaxMarks(selectedTerm, selectedSubject);
+  }, [selectedTerm, selectedSubject]);
+
+  const updateMaxMarks = (term, subject) => {
+    let calculatedMaxMarks = 50;
+    if (term === 'Final Term') {
+      calculatedMaxMarks = subject.includes('Computer (Part 1)') ? 70 : subject.includes('Computer (Part 2)') ? 30 : 100;
+    } else {
+      calculatedMaxMarks = subject.includes('Computer (Part 1)') ? 35 : subject.includes('Computer (Part 2)') ? 15 : 50;
+    }
+    setMaxMarks(calculatedMaxMarks);
+  };
 
   const handleTermChange = (itemValue) => {
     setSelectedTerm(itemValue);
-    if (itemValue === 'First Term' || itemValue === 'Mid Term') {
-      setMaxMarks(50);
-    } else if (itemValue === 'Final Term') {
-      setMaxMarks(100);
+    updateMaxMarks(itemValue, selectedSubject);
+  };
+
+  const handleSubjectChange = (itemValue) => {
+    setSelectedSubject(itemValue);
+    updateMaxMarks(selectedTerm, itemValue);
+  };
+
+  const handleInsertMarks = async () => {
+    const marksValue = parseInt(marks, 10);
+
+    if ((marksValue <= maxMarks) && (marksValue >= 0)) {
+      try {
+        const studentRef = firestore().collection('students').doc(selectedStudent);
+        const year = '2024';
+
+        const resultRef = studentRef.collection('result').doc(year);
+        const resultDoc = await resultRef.get();
+
+        if (resultDoc.exists) {
+          const resultData = resultDoc.data();
+          const termField = selectedTerm.toLowerCase().replace(' ', '');
+          const subjectField = resultData[termField]?.[selectedSubject];
+
+          if (subjectField === null || subjectField === undefined) {
+            await resultRef.update({
+              [`${termField}.${selectedSubject}`]: marksValue,
+            });
+
+            Alert.alert('Success', 'Marks inserted successfully!');
+            navigation.goBack();
+          } else {
+            Alert.alert('Error', 'Marks already exist for this subject and term');
+          }
+        } else {
+          await resultRef.set({
+            class: studentRef.classOfAdmission,
+            firstterm: {},
+            midterm: {},
+            finalterm: {},
+          });
+          await resultRef.update({
+            [`${termField}.${selectedSubject}`]: marksValue,
+          });
+
+          Alert.alert('Success', 'Marks inserted successfully!');
+          navigation.goBack();
+        }
+      } catch (error) {
+        console.error('Error inserting marks:', error);
+        Alert.alert('Error', 'Failed to insert marks');
+      }
+    } else {
+      Alert.alert('Error', `Enter valid marks (0-${maxMarks})`);
     }
   };
 
-  const handleInsertMarks = () => {
-    const marksValue = parseInt(marks, 10);
-    if ((marksValue <= maxMarks) && (marksValue>0) ) {
-      Alert.alert('Success', 'Marks inserted successfully!');
-    } else {
-      Alert.alert('Error', `Enter Marks Again`);
-    }
-  };
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="grey" />
+        <Text style={styles.loadingText}>Loading...</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
-      
       <View style={styles.dropdownContainer}>
         <Picker
           selectedValue={selectedTerm}
@@ -51,9 +152,10 @@ const InsertMarks = () => {
       <View style={styles.dropdownContainer}>
         <Picker
           selectedValue={selectedSubject}
-          onValueChange={(itemValue) => setSelectedSubject(itemValue)}
+          onValueChange={handleSubjectChange}
           style={styles.picker}
         >
+          <Picker.Item label="Select Subject" value="" />
           {subjects.map((subject, index) => (
             <Picker.Item key={index} label={subject} value={subject} style={styles.pickerLabel} />
           ))}
@@ -67,8 +169,9 @@ const InsertMarks = () => {
           onValueChange={(itemValue) => setSelectedStudent(itemValue)}
           style={styles.picker}
         >
-          {students.map((student, index) => (
-            <Picker.Item key={index} label={student} value={student} style={styles.pickerLabel} />
+          <Picker.Item label="Select Student" value="" />
+          {students.map((student) => (
+            <Picker.Item key={student.id} label={student.name} value={student.id} style={styles.pickerLabel} />
           ))}
         </Picker>
         <Icon name="arrow-drop-down" size={30} style={styles.pickerIcon} />
@@ -77,9 +180,9 @@ const InsertMarks = () => {
       <View style={styles.marksContainer}>
         <TextInput
           style={styles.input}
-          keyboardType='numeric'
+          keyboardType="numeric"
           placeholder="Enter Marks"
-          placeholderTextColor={"#a1a1a1"}
+          placeholderTextColor="#a1a1a1"
           value={marks}
           onChangeText={(text) => setMarks(text)}
         />
@@ -166,6 +269,14 @@ const styles = StyleSheet.create({
     fontSize: 17,
     fontFamily: 'Poppins-SemiBold',
     color: 'black',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    color: 'grey',
   },
 });
 

@@ -1,50 +1,62 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, Alert, TextInput, ActivityIndicator } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore';
 
 const AdminStudentsScreen = () => {
   const navigation = useNavigation();
   const [students, setStudents] = useState([]);
+  const [filteredStudents, setFilteredStudents] = useState([]);
   const [expandedStudent, setExpandedStudent] = useState(null);
   const [feeStatusData, setFeeStatusData] = useState({});
   const [showPersonalInfo, setShowPersonalInfo] = useState({});
   const [showResult, setShowResult] = useState({});
   const [showFeeStatus, setShowFeeStatus] = useState({});
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filterVisible, setFilterVisible] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const unsubscribe = firestore()
-      .collection('students')
-      .onSnapshot(querySnapshot => {
-        const studentsList = [];
-        const feeStatusData = {};
-        querySnapshot.forEach(documentSnapshot => {
-          const studentData = documentSnapshot.data();
-          studentsList.push({
-            ...studentData,
-            id: documentSnapshot.id,
-          });
-
-          // Fetch fee status for each student
-          documentSnapshot.ref.collection('feeStatus').get().then(feeSnapshot => {
-            if (!feeSnapshot.empty) {
-              feeSnapshot.forEach(doc => {
-                const feeData = doc.data();
-                feeStatusData[documentSnapshot.id] = {
-                  ...feeData,
-                  id: doc.id, // Save feeStatusId
-                }
-              });
-            }
-          });
+  const fetchData = async () => {
+    try {
+      const studentsList = [];
+      const feeStatusData = {};
+      const querySnapshot = await firestore().collection('students').get();
+      querySnapshot.forEach(documentSnapshot => {
+        const studentData = documentSnapshot.data();
+        studentsList.push({
+          ...studentData,
+          id: documentSnapshot.id,
         });
-        setStudents(studentsList);
-        setFeeStatusData(feeStatusData);
-      });
 
-    return () => unsubscribe();
-  }, []);
+        // Fetch fee status for each student
+        documentSnapshot.ref.collection('feeStatus').get().then(feeSnapshot => {
+          if (!feeSnapshot.empty) {
+            feeSnapshot.forEach(doc => {
+              const feeData = doc.data();
+              feeStatusData[documentSnapshot.id] = {
+                ...feeData,
+                id: doc.id, // Save feeStatusId
+              }
+            });
+          }
+        });
+      });
+      setStudents(studentsList);
+      setFilteredStudents(studentsList);
+      setFeeStatusData(feeStatusData);
+      setLoading(false);
+    } catch (error) {
+      console.log('Failed to fetch students:', error);
+      setLoading(false);
+    }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchData();
+    }, [])
+  );
 
   const handleToggleExpand = (id) => {
     setExpandedStudent(expandedStudent === id ? null : id);
@@ -105,6 +117,18 @@ const AdminStudentsScreen = () => {
     }
   };
 
+  const handleSearch = (text) => {
+    setSearchQuery(text);
+    const filtered = students.filter(student =>
+      student.name.toLowerCase().includes(text.toLowerCase())
+    );
+    setFilteredStudents(filtered);
+  };
+
+  const handleToggleFilter = () => {
+    setFilterVisible(!filterVisible);
+  };
+
   const renderItem = ({ item }) => {
     const isExpanded = expandedStudent === item.id;
     const isPersonalInfoVisible = showPersonalInfo[item.id];
@@ -117,6 +141,7 @@ const AdminStudentsScreen = () => {
           <View>
             <Text style={styles.regNoText}>{item.regNo}</Text>
             <Text style={styles.nameText}>{item.name}</Text>
+            <Text style={styles.classText}>{item.classOfAdmission}</Text>
           </View>
           <View style={styles.iconContainer}>
             <TouchableOpacity onPress={() => handleEdit(item, 'student')}>
@@ -189,7 +214,7 @@ const AdminStudentsScreen = () => {
                   </TouchableOpacity>
                 </View>
                 </View>
-                <Text style={styles.detailText}>ID: {feeStatusData[item.id]?.id}</Text>
+                {/* <Text style={styles.detailText}>ID: {feeStatusData[item.id]?.id}</Text> */}
                 <Text style={styles.detailText}>Amount Due: {feeStatusData[item.id]?.amountDue}</Text>
                 <Text style={styles.detailText}>Date Due: {feeStatusData[item.id]?.datePaid.toDate().toLocaleDateString()}</Text>
                 <Text style={styles.detailText}>Amount Paid: {feeStatusData[item.id]?.amountPaid}</Text>
@@ -207,13 +232,32 @@ const AdminStudentsScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>STUDENTS</Text>
-      <FlatList
-        data={students}
-        keyExtractor={(item) => item.id}
-        renderItem={renderItem}
-        contentContainerStyle={styles.listContainer}
-      />
+      <View style={styles.searchFilterContainer}>
+        <View style={styles.searchBox}>
+          <Icon name="magnify" size={20} color="black" />
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Search"
+            placeholderTextColor={'black'}
+            value={searchQuery}
+            onChangeText={handleSearch}
+          />
+        </View>
+        <TouchableOpacity onPress={handleToggleFilter}>
+          <Icon name="filter-variant" size={30} color="black" style={styles.filterIcon} />
+        </TouchableOpacity>
+      </View>
+      
+      {loading ? (
+        <ActivityIndicator size="large" color="grey" style={styles.loadingIndicator}/>
+      ) : (
+        <FlatList
+          data={filteredStudents}
+          keyExtractor={(item) => item.id}
+          renderItem={renderItem}
+          contentContainerStyle={styles.listContainer}
+        />
+      )}
       <TouchableOpacity style={styles.addButton} onPress={handleAddStudent}>
         <Icon name="plus" size={30} color="black" />
       </TouchableOpacity>
@@ -227,6 +271,28 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: '#fff',
   },
+  searchFilterContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  searchBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#d3f7d3',
+    borderRadius: 10,
+    paddingHorizontal: 10,
+    flex: 1,
+  },
+  searchInput: {
+    flex: 1,
+    marginLeft: 10,
+    height: 40,
+    color: 'black',
+  },
+  filterIcon: {
+    marginLeft: 15,
+  },
   header: {
     fontSize: 24,
     fontWeight: 'bold',
@@ -237,6 +303,9 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     paddingBottom: 80, // Add space for the sticky button
+  },
+  loadingIndicator: {
+    marginTop: 20,
   },
   studentItem: {
     backgroundColor: '#d3f7d3',
@@ -254,8 +323,12 @@ const styles = StyleSheet.create({
   nameText: {
     fontSize: 14,
     color: 'black',
-    marginTop: -20,
-    marginLeft: 40,
+    marginTop: 10,
+  },
+  classText: {
+    fontSize: 12,
+    color: 'black',
+    marginTop: 5,
   },
   expandedContent: {
     backgroundColor: '#d3f7d3',
@@ -302,7 +375,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 0,
     elevation: 4,
-    
   },
   buttonRow: {
     justifyContent: 'space-between',

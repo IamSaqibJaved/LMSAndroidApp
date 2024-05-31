@@ -13,11 +13,12 @@ const HomeScreen = ({ navigation }) => {
 
     }
     else if (userType === 'Student'){
-      // navigation.navigate('Login', {userType});
-      navigation.navigate("StudentOptions");
+      navigation.navigate('Login', {userType});
+      //navigation.navigate("StudentOptions");
     }
     else if (userType === 'Teacher'){
-      navigation.navigate('TeacherDashboard');
+      //navigation.navigate('TeacherDashboard');
+      navigation.navigate('Login', {userType});
   }
   };
 

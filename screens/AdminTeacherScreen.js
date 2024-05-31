@@ -1,19 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, StyleSheet, Alert } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
+import auth from '@react-native-firebase/auth';
 
 const generateRandomTeachers = (numTeachers = 15) => {
   const teachers = [];
   const names = ['John Doe', 'Jane Smith', 'Alice Johnson', 'Robert Brown', 'Linda Davis', 'Michael Wilson', 'Karen Taylor', 'James Moore', 'Emily Anderson', 'Jessica Thomas', 'Paul Jackson', 'Laura White', 'Steven Harris', 'Mary Martin', 'David Thompson'];
   const domains = ['example.com', 'school.edu', 'mail.com'];
+  const password = '123456';
 
   for (let i = 0; i < numTeachers; i++) {
     const name = names[i % names.length];
     const email = `${name.toLowerCase().replace(' ', '.')}@${domains[i % domains.length]}`;
+    auth().createUserWithEmailAndPassword(email, password);
     teachers.push({
       name,
       email,
-      password: '1234',
     });
   }
 

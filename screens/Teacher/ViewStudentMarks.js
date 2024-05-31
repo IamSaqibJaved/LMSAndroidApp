@@ -1,21 +1,74 @@
-import React from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import firestore from '@react-native-firebase/firestore';
 
-const students = [
-  { id: 'FA21-BCS-074', name: 'Muhammad Uzair', marks: '50/50' },
-  { id: 'FA21-BCS-082', name: 'Saqib Javed', marks: '50/50' },
-  { id: 'FA21-BCS-014', name: 'Arshia Azmat', marks: '50/50' },
-  { id: 'FA21-BCS-086', name: 'Sidra Naeem', marks: '50/50' },
-];
+const ViewStudentMarks = ({ route, navigation }) => {
+  const { term, subject, teacherId } = route.params;
+  const [students, setStudents] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-const StudentListScreen = () => {
-  const handleEdit = (id) => {
-    Alert.alert('Edit', `Edit student with ID: ${id}`);
+  const fetchStudents = async () => {
+    try {
+      const classSnapshot = await firestore().collection('classes').where('teacher', '==', teacherId).get();
+      if (!classSnapshot.empty) {
+        const className = classSnapshot.docs[0].data().className;
+        const studentsSnapshot = await firestore().collection('students').where('classOfAdmission', '==', className).get();
+        const studentsList = [];
+
+        for (const doc of studentsSnapshot.docs) {
+          const studentData = doc.data();
+          const resultSnapshot = await firestore().collection('students').doc(doc.id).collection('result').doc('2024').get();
+          if (resultSnapshot.exists) {
+            const resultData = resultSnapshot.data();
+            const marks = resultData[term.toLowerCase().replace(' ', '')]?.[subject] ?? 'N/A';
+            studentsList.push({
+              id: studentData.regNo,
+              name: studentData.name,
+              studentId: doc.id,
+              marks: `${marks}/${term === 'Final Term' ? 100 : subject.includes('Computer (Part 1)') ? term === 'Final Term' ? 70 : 35 : subject.includes('Computer (Part 2)') ? term === 'Final Term' ? 30 : 15 : 50}`,
+            });
+          }
+        }
+        setStudents(studentsList);
+      }
+    } catch (error) {
+      console.error('Error fetching students:', error);
+      Alert.alert('Error', 'Failed to fetch students');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleDelete = (id) => {
-    Alert.alert('Delete', `Delete student with ID: ${id}`);
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      setLoading(true);
+      fetchStudents();
+    });
+
+    return unsubscribe;
+  }, [navigation]);
+
+  const handleEdit = (studentId) => {
+    navigation.navigate('edit-student-marks', {
+      studentId,
+      term,
+      subject,
+      teacherId,
+    });
+  };
+
+  const handleDelete = async (studentId) => {
+    try {
+      await firestore().collection('students').doc(studentId).collection('result').doc('2024').update({
+        [`${term.toLowerCase().replace(' ', '')}.${subject}`]: null,
+      });
+      Alert.alert('Success', 'Marks deleted successfully');
+      fetchStudents();
+    } catch (error) {
+      console.error('Error deleting marks:', error);
+      Alert.alert('Error', 'Failed to delete marks');
+    }
   };
 
   const renderItem = ({ item }) => (
@@ -26,15 +79,24 @@ const StudentListScreen = () => {
       </View>
       <View style={styles.marksContainer}>
         <Text style={styles.marks}>{item.marks}</Text>
-        <TouchableOpacity onPress={() => handleEdit(item.id)}>
-          <Icon name="edit" size={20} color="#000" marginRight={10}/>
+        <TouchableOpacity onPress={() => handleEdit(item.studentId)}>
+          <Icon name="edit" size={20} color="#000" marginRight={10} />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => handleDelete(item.id)}>
+        <TouchableOpacity onPress={() => handleDelete(item.studentId)}>
           <Icon name="delete" size={20} color="#000" />
         </TouchableOpacity>
       </View>
     </View>
   );
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="grey" />
+        <Text style={styles.loadingText}>Loading...</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -42,10 +104,9 @@ const StudentListScreen = () => {
       <FlatList
         data={students}
         renderItem={renderItem}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.studentId}
         contentContainerStyle={styles.listContainer}
       />
-      
     </View>
   );
 };
@@ -61,6 +122,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
     marginVertical: 20,
+    fontFamily: 'Poppins-SemiBold',
   },
   listContainer: {
     paddingBottom: 80,
@@ -98,7 +160,14 @@ const styles = StyleSheet.create({
     color: 'black',
     fontFamily: 'Poppins-SemiBold',
   },
-  
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    color: 'grey',
+  },
 });
 
-export default StudentListScreen;
+export default ViewStudentMarks;

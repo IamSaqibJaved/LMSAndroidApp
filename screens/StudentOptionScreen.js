@@ -1,20 +1,25 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-
+import { useRoute } from '@react-navigation/native';
 
 const options = [
   { name: 'Marks',icon: 'chart-line', screen:"Marks" },
-  { name: 'Timetable', icon: 'calendar-outline', screen:"TimeTableScreenforStudent" },
+  { name: 'Timetable', icon: 'calendar-outline', screen:"TimetableStudent" },
   { name: 'Syllabus', icon: 'book-outline', screen:"SyllabusStudent" },
   // { name: 'Student', icon: 'account-group', screen:"Student" },
-  { name: 'Fee', icon: 'cash', screen:"Fee" },
+  { name: 'Fee', icon: 'cash', screen:"StudentFee" },
   { name: 'Result', icon: 'file-document-edit-outline' , screen:"Result"},
 ];
 
 const StudentOptionScreen = ({ navigation }) => {
-  const handlePress = (screen) => {
-    navigation.navigate(screen);
+
+  const route = useRoute();
+  const { studentId } = route.params;
+  Alert.alert(studentId);
+
+  const handlePress = (option) => {
+    navigation.navigate(option.screen, {studentId});
   };
 
   return (

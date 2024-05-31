@@ -6,14 +6,14 @@ import { useNavigation } from '@react-navigation/native';
 const syllabus = [
   { id: 'nursery', name: 'Nursery' },
   { id: 'prep', name: 'Prep' },
-  { id: 'class1', name: 'Class 1' },
-  { id: 'class2', name: 'Class 2' },
-  { id: 'class3', name: 'Class 3' },
-  { id: 'class4', name: 'Class 4' },
-  { id: 'class5', name: 'Class 5' },
-  { id: 'class6', name: 'Class 6' },
-  { id: 'class7', name: 'Class 7' },
-  { id: 'class8', name: 'Class 8' },
+  { id: 'class 1', name: 'Class 1' },
+  { id: 'class 2', name: 'Class 2' },
+  { id: 'class 3', name: 'Class 3' },
+  { id: 'class 4', name: 'Class 4' },
+  { id: 'class 5', name: 'Class 5' },
+  { id: 'class 6', name: 'Class 6' },
+  { id: 'class 7', name: 'Class 7' },
+  { id: 'class 8', name: 'Class 8' },
 ];
 
 const SyllabusScreen = () => {
