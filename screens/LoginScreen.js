@@ -1,5 +1,10 @@
+<<<<<<< Updated upstream
 import React, { useState, useCallback } from 'react';
 import { View, Text, Image, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from 'react-native';
+=======
+import React, { useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert,Image } from 'react-native';
+>>>>>>> Stashed changes
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import { useFocusEffect } from '@react-navigation/native';
@@ -72,11 +77,22 @@ const LoginScreen = ({ route, navigation }) => {
 
   return (
     <View style={styles.container}>
+<<<<<<< Updated upstream
       <Image
         source={require("../images/logo.png")}
         style={styles.logo}
         resizeMode="contain"
       />
+=======
+      <View style={styles.logoContainer}>
+        <Image
+          source={require("../images/logo.png")}
+          style={styles.logo}
+          resizeMode="contain"
+        />
+        </View>
+      {/* <Text style={styles.title}>{userType} Portal</Text> */}
+>>>>>>> Stashed changes
       <TextInput
       
         style={styles.input}

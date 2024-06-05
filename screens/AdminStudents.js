@@ -183,20 +183,38 @@ const AdminStudentsScreen = () => {
                 <Text style={styles.detailText}>Residence: {item.fatherDetails?.residence}</Text>
               </View>
             )}
+<<<<<<< Updated upstream
+=======
+            {isResultVisible && (
+              <View style={styles.headericon}>
+                <Text style={styles.sectionHeader}>Result</Text>
+                <View style={styles.iconContainer}>
+                  <TouchableOpacity onPress={() => handleEdit(item, 'result')}>
+                    <Icon name="pencil" size={20} color="black" style={styles.icon} />
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={() => handleDelete(item, 'result')}>
+                    <Icon name="trash-can-outline" size={20} color="black" style={styles.icon} />
+                  </TouchableOpacity>
+                </View>
+              </View>
+            )}
+>>>>>>> Stashed changes
             {isFeeStatusVisible && (
-              <View>
+              <View  >
                 <View style={styles.headericon}>
                 <Text style={styles.sectionHeader}>Fee Status</Text>
                 <View style={styles.iconContainer}>
+<<<<<<< Updated upstream
                   <TouchableOpacity onPress={() => handleEditFee(item, 'feeStatus')}>
+=======
+                  <TouchableOpacity onPress={() => handleEdit(item, 'feeStatus')}>
+>>>>>>> Stashed changes
                     <Icon name="pencil" size={20} color="#3d9f76" style={styles.icon} />
                   </TouchableOpacity>
                   <TouchableOpacity onPress={() => handleDelete(item, 'feeStatus')}>
                     <Icon name="trash-can-outline" size={20} color="#3d9f76" style={styles.icon} />
                   </TouchableOpacity>
                 </View>
-                </View>
-                {/* <Text style={styles.detailText}>ID: {feeStatusData[item.id]?.id}</Text> */}
                 <Text style={styles.detailText}>Amount Due: {feeStatusData[item.id]?.amountDue}</Text>
                 <Text style={styles.detailText}>Date Due: {feeStatusData[item.id]?.datePaid.toDate().toLocaleDateString()}</Text>
                 <Text style={styles.detailText}>Amount Paid: {feeStatusData[item.id]?.amountPaid}</Text>
@@ -204,6 +222,7 @@ const AdminStudentsScreen = () => {
                 <Text style={styles.detailText}>Payable Amount: {feeStatusData[item.id]?.amountDue > feeStatusData[item.id]?.amountPaid ? feeStatusData[item.id]?.amountDue - feeStatusData[item.id]?.amountPaid : 0}</Text>
                 <Text style={styles.detailText}>Fee Status: {feeStatusData[item.id]?.datePaid.toDate() > feeStatusData[item.id]?.dueDate.toDate() ? 'Late Fee' : ''}</Text>
                 <Text style={styles.detailText}>Remarks: {feeStatusData[item.id]?.remarks}</Text>
+              </View>
               </View>
             )}
           </View>
@@ -225,6 +244,12 @@ const AdminStudentsScreen = () => {
             onChangeText={handleSearch}
           />
         </View>
+<<<<<<< Updated upstream
+=======
+        <TouchableOpacity onPress={handleToggleFilter}>
+          <Icon name="filter-variant" size={30} color="#3d9f76" style={styles.filterIcon} />
+        </TouchableOpacity>
+>>>>>>> Stashed changes
       </View>
       
       {loading ? (
@@ -241,7 +266,11 @@ const AdminStudentsScreen = () => {
         />
       )}
       <TouchableOpacity style={styles.addButton} onPress={handleAddStudent}>
+<<<<<<< Updated upstream
         <Icon name="plus" size={30} color= "#3d9f76" />
+=======
+        <Icon name="plus" size={30} color="#3d9f76" />
+>>>>>>> Stashed changes
       </TouchableOpacity>
     </View>
   );
@@ -261,9 +290,13 @@ const styles = StyleSheet.create({
   searchBox: {
     flexDirection: 'row',
     alignItems: 'center',
+<<<<<<< Updated upstream
     // backgroundColor: 'grey',
     borderColor: "#abafaf",
     borderWidth: 1,
+=======
+    backgroundColor: '#d6f7e7',
+>>>>>>> Stashed changes
     borderRadius: 10,
     paddingHorizontal: 10,
     flex: 1,
@@ -323,14 +356,24 @@ const styles = StyleSheet.create({
   headericon:{
     flexDirection: 'row',
     marginRight: 60,
+    // backgroundColor: '#fff',
+    // padding: 10,
+    // borderWidth: 5,
+    // borderColor: "#d6f7e7",
+    // borderRadius: 10,
+    // marginTop: -10,
+    // marginBottom: 10,
   },
   sectionHeader: {
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 10,
+<<<<<<< Updated upstream
     marginRight: 100,
+=======
+    marginRight: 40,
+>>>>>>> Stashed changes
     color: 'black',
-    // marginLeft: 80,
   },
   loadingText: {
     fontSize: 16,
@@ -350,6 +393,7 @@ const styles = StyleSheet.create({
   },
   icon: {
     marginLeft: 15,
+    color: '#3d9f76',
   },
   addButton: {
     position: 'absolute',

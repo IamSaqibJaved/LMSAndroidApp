@@ -118,7 +118,11 @@ const AdminStudentFeesScreen = () => {
           </View>
           <View style={styles.iconContainer}>
             <TouchableOpacity onPress={() => feeStatus ? handleEdit(item, feeStatus.id) : handleAddFee(item)}>
+<<<<<<< Updated upstream
               <Icon name={feeStatus ? "pencil" : "plus"} size={20} color="#3d9f76" style={styles.icon} />
+=======
+              <Icon name={feeStatus ? "pencil" : "plus"} size={25} color="#3d9f76" style={styles.icon} />
+>>>>>>> Stashed changes
             </TouchableOpacity>
           </View>
         </View>
@@ -199,6 +203,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     padding: 5,
     marginTop: 5,
+   
   },
   payableTag: {
     backgroundColor: 'red',
@@ -208,6 +213,10 @@ const styles = StyleSheet.create({
   },
   noFeeStatusTag: {
     backgroundColor: '#3d9f76',
+<<<<<<< Updated upstream
+=======
+    paddingLeft: 20,
+>>>>>>> Stashed changes
   },
   tagText: {
     color: 'white',

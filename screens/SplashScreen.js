@@ -7,7 +7,11 @@ const SplashScreen = ({ navigation }) => {
   useEffect(() => {
     const timer = setTimeout(() => {
       navigation.replace('Home');
+<<<<<<< Updated upstream
     }, 3000);
+=======
+    }, 1000);
+>>>>>>> Stashed changes
     return () => clearTimeout(timer); // Cleanup the timer on component unmount
   }, [navigation]);
 
@@ -34,7 +38,11 @@ const styles = StyleSheet.create({
   background: {
     flex: 1,
     top: 410,
+<<<<<<< Updated upstream
     marginTop: 300,
+=======
+    marginTop: 270,
+>>>>>>> Stashed changes
     width: '100%',
     height: '20%',
   },

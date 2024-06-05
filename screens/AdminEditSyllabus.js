@@ -5,6 +5,10 @@ import { useRoute, useNavigation, useFocusEffect } from '@react-navigation/nativ
 import storage from '@react-native-firebase/storage';
 import firestore from '@react-native-firebase/firestore';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 
 const EditSyllabusScreen = () => {
   const route = useRoute();
@@ -115,6 +119,7 @@ const EditSyllabusScreen = () => {
         {loading ? (
           <ActivityIndicator size="large" color="#0000ff" />
         ) : (
+<<<<<<< Updated upstream
           imageUri ? (
             <Image source={{ uri: imageUri }} style={styles.image} />
           ) : (
@@ -144,20 +149,51 @@ const EditSyllabusScreen = () => {
           <Text style={styles.uploadingText}>Uploading...</Text>
         </View>
       )}
+=======
+          <Image
+            source={require('../images/syllabus1.jpg')}
+            style={styles.logo}
+            resizeMode="contain"
+          />
+        )}
+      </View>
+      <TouchableOpacity style={styles.homeButton}onPress={handleImagePick}>
+              <View style={styles.circle}>
+                <Icon name="cloud-upload" size={40} color="#3ca475" />
+              </View>
+                <Text style={styles.homeButtonText}>Upload Image</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.homeButton} onPress={handleRemoveImage}>
+              <View style={styles.circle}>
+                <Icon name="delete" size={40} color="#3ca475" />
+              </View>
+                <Text style={styles.homeButtonText}>Delete Image</Text>
+              </TouchableOpacity>
+>>>>>>> Stashed changes
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+<<<<<<< Updated upstream
   circle: {
     width: 80,
     height: 80,
+=======
+  circle:{
+    width: 80,
+    height:80,
+>>>>>>> Stashed changes
     borderRadius: 70,
     backgroundColor: '#d6f7e7',
     justifyContent: 'center',
     alignItems: 'center',
     marginLeft: -200,
+<<<<<<< Updated upstream
     bottom: 23,
+=======
+    bottom: 23, 
+>>>>>>> Stashed changes
     zIndex: 1,
   },
   homeButton: {

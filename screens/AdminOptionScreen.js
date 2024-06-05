@@ -90,10 +90,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: 'Poppins-SemiBold',
     color: 'black',
+<<<<<<< Updated upstream
   },
   headerButton: {
     marginRight: 10,
     padding: 10,
+=======
+>>>>>>> Stashed changes
   },
 });
 

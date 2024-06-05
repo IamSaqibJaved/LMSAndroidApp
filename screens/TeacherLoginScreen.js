@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 
 const LoginScreen = ({ route, navigation }) => {
@@ -40,7 +40,7 @@ const LoginScreen = ({ route, navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{userType} Portal</Text>
+      
       <TextInput
         style={styles.input}
         placeholder="Email"
@@ -66,6 +66,12 @@ const LoginScreen = ({ route, navigation }) => {
 };
 
 const styles = StyleSheet.create({
+  logo: {
+    height: 150,
+    width: 150,
+    marginLeft: 118,
+    marginTop: -180,
+  },
   container: {
     flex: 1,
     justifyContent: 'center',
@@ -89,7 +95,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins-SemiBold'
   },
   button: {
-    backgroundColor: '#d3f7d3',
+    backgroundColor: '#d6f7e7',
     padding: 15,
     borderRadius: 10,
     marginTop: 20,

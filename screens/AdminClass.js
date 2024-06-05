@@ -72,7 +72,7 @@ const AdminClassScreen = ({ navigation }) => {
         <View style={styles.classItem}>
           <Text style={styles.classText}>{item.className}</Text>
           <Text style={styles.subText}>{`Assigned to: ${teachers[item.teacher] || 'Fetching...'}`}</Text>
-          <Text style={styles.subText}>{`Room #: ${item.room}`}</Text>
+          <Text style={styles.subText}>{`Room # ${item.room}`}</Text>
           <View style={styles.iconContainer}>
             <TouchableOpacity onPress={() => handleEdit(item)}>
               <Icon name="pencil" size={20} color="#3d9f76" style={styles.icon} />
@@ -149,9 +149,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-end',
     marginTop: -60,
+<<<<<<< Updated upstream
+=======
+    // backgroundColor: 'red',
+>>>>>>> Stashed changes
   },
   icon: {
     marginLeft: 15,
+    
   },
   addButton: {
     position: 'absolute',
